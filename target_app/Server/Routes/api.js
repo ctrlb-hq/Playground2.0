@@ -287,6 +287,7 @@ function gameWinner(req,res) {
 function nextMove(req,res) {
 	let input = JSON.parse(req.body.board);
 	let output = move(input);
+	// let newBoard = addBoard(input,output);
   res.json({nextMove : output});
 }
 
@@ -303,5 +304,7 @@ router.post('/winner',
 router.post('/move',
   nextMove
 );
+
+
 
 module.exports = router;

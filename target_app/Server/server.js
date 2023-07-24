@@ -13,7 +13,7 @@ var server = app.listen(app.get('port'), function() {
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname,'../Public')));
+app.use(express.static(path.join(__dirname,'../../templates')));
 
 app.use(cookieParser());
 
@@ -30,7 +30,7 @@ app.use('/api', api);
 
 app.get('/', function (req, res) {
 	//res.status(200).send('Hi. Tic Tac Toe Homepage');
-  res.sendFile(path.join(__dirname,'../Public','tic-tac-toe.html'));
+  res.sendFile(path.join(__dirname,'../../templates','tic-tac-toe.html'));
 });
 
 app.all('*', function (req, res) {
