@@ -6,7 +6,6 @@
   "scripts": {
     "start": "nodemon --watch server ./Server/server.js",
     "test": "mocha spec"
-    
   },
   "repository": {
     "type": "git",

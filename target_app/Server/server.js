@@ -1,25 +1,3 @@
-var cluster = require('cluster');
-
-if (cluster.isMaster) {
-
-  // Count the machine's CPUs
-  var cpuCount = require('os').cpus().length;
-
-  // Create a worker for each CPU
-  for (var i = 0; i < cpuCount; i += 1) {
-      cluster.fork();
-  }
-
-  // Listen for dying workers
-  cluster.on('exit', function (worker) {
-
-    console.log('Worker died :(', worker.id);
-    cluster.fork();
-
-    });
-
-} else {
-
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
@@ -28,7 +6,7 @@ var api = require('./Routes/api');
 
 var app = express();
 
-app.set('port', (process.env.PORT || 8000));
+app.set('port', (process.argv[2] || 8000));
 
 var server = app.listen(app.get('port'), function() {
   console.log('listening on port ',app.get('port'));
@@ -60,4 +38,3 @@ app.all('*', function (req, res) {
 });
 
 module.exports = server;
-}
