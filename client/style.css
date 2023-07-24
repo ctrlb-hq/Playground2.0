@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  #message {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #333;
+  }
+  
+  .board {
+    width: 490px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .board button {
+    height: 150px;
+    width: 150px;
+    font-size: 3em;
+    background-color: #fff;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .board button:hover {
+    background-color: #ddd;
+  }
+  
+  .board button:focus {
+    outline: none;
+  }
+  
+  .board button.disabled {
+    cursor: not-allowed;
+    background-color: #ccc;
+  }
+  
+  .board button.disabled:hover {
+    background-color: #ccc;
+  }
+  
+  .board button.x {
+    color: #f44336;
+  }
+  
+  .board button.o {
+    color: #2196f3;
+  }

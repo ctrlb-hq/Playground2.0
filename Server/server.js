@@ -28,7 +28,7 @@ var api = require('./Routes/api');
 
 var app = express();
 
-app.set('port', (process.env.PORT || 3000));
+app.set('port', (process.env.PORT || 8000));
 
 var server = app.listen(app.get('port'), function() {
   console.log('listening on port ',app.get('port'));
