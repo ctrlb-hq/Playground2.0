@@ -1,9 +1,14 @@
 from flask import Flask, render_template, request, Response, send_file
 import multiprocessing
+# import concurrent.futures
 import subprocess
-import os
 import time
+import platform
 import requests
+import threading
+
+# multiprocessing.freeze_support()  # Add freeze_support() for Windows compatibility
+
 
 app = Flask(__name__)
 # cwd = os.getcwd()
@@ -16,6 +21,8 @@ Stores:
     }
 }
 """
+# Use Manager to create a shared DB dictionary
+# manager = multiprocessing.Manager()
 DB = {}
 PORTS_USED = set()  # to maintain what all ports have been used
 
@@ -40,14 +47,41 @@ def start_new_target_app():
     free_port = get_free_port()
     if free_port == None:
         return None, None
+    # Set the timestamp in the DB dictionary when a new app is started
+    timestamp = time.time()
     cmd = f"cd target_app && node Server/server.js {free_port}"
     command = ["node", "Server/server.js", str(free_port)]
 
     process = subprocess.Popen(command, cwd="target_app")
     print("Sleeping for 2 seconds...")
     time.sleep(2)
-    return free_port, process.pid
+    return free_port, process.pid, timestamp # Add a timestamp to the return value
 
+def port_watcher(DB):
+    while True:
+        print("Running port watcher...")
+        now = time.time()
+        if not DB:  # Check if DB is empty
+            print("DB is empty")
+        else:
+            print(f"length = {len(DB.items())}")
+        # Iterate over a copy of the dictionary to avoid concurrent modification issues
+        for email, info in list(DB.items()):
+            port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
+            print(f"timestamp left {now - timestamp}")
+            if now - timestamp > 60:  # Check if the port was used for more than an hour
+                print(f"Cleaning up port {port} for email {email}")
+                del DB[email]  # Remove the entry from the dictionary
+                PORTS_USED.remove(port)  # Free up the port in the PORTS_USED set
+            else:
+                # Re-authenticate the user if the timestamp has not expired
+                response = requests.get(f"http://localhost:{port}")
+                if response.status_code != 200:
+                    # If re-authentication fails, remove the user entry
+                    print(f"Failed to re-authenticate user with email {email}")
+                    del DB[email]
+                    PORTS_USED.remove(port)
+        time.sleep(60)  # Check every 60 minutes
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -57,15 +91,20 @@ def index():
         email = request.form.get("email")
         if email not in DB:
             # Spin a new server here
-            port, pid = start_new_target_app()
+            port, pid, timestamp = start_new_target_app()
             if port and pid:
                 DB[email] = {
                     "port": port,
-                    "pid": pid
+                    "pid": pid,
+                    "timestamp":timestamp
                 }
             print(
                 f"New target_app started on port {port} with process id {pid}")
         port = DB[email]["port"]
+        if not DB:  # Check if DB is empty
+            print("DB is empty index")
+        else:
+            print(f"length index= {len(DB.items())}")
         response = requests.get(f"http://localhost:{port}")
         if response.status_code == 200:
             return render_template("tic-tac-toe.html", port=port)
@@ -78,4 +117,7 @@ def index():
 
 
 if __name__ == "__main__":
+    # Start the port watcher as a separate thread
+    watcher_thread = threading.Thread(target=port_watcher, args=(DB,))
+    watcher_thread.start()
     app.run(debug=True, port=5001, host="0.0.0.0")
