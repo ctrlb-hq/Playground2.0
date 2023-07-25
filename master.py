@@ -5,6 +5,7 @@ import subprocess
 import time
 import platform
 import requests
+import os
 import threading
 
 # multiprocessing.freeze_support()  # Add freeze_support() for Windows compatibility
@@ -71,16 +72,13 @@ def port_watcher(DB):
             print(f"timestamp left {now - timestamp}")
             if now - timestamp > 60:  # Check if the port was used for more than an hour
                 print(f"Cleaning up port {port} for email {email}")
+                try:
+                    os.kill(pid, 9)  # Send SIGKILL signal to terminate the process
+                    print(f"Process with PID {pid} killed")
+                except Exception as e:
+                    print(f"Failed to kill process with PID {pid}: {e}")
                 del DB[email]  # Remove the entry from the dictionary
                 PORTS_USED.remove(port)  # Free up the port in the PORTS_USED set
-            else:
-                # Re-authenticate the user if the timestamp has not expired
-                response = requests.get(f"http://localhost:{port}")
-                if response.status_code != 200:
-                    # If re-authentication fails, remove the user entry
-                    print(f"Failed to re-authenticate user with email {email}")
-                    del DB[email]
-                    PORTS_USED.remove(port)
         time.sleep(60)  # Check every 60 minutes
 
 @app.route("/", methods=["GET", "POST"])
