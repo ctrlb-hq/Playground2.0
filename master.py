@@ -69,7 +69,7 @@ def port_watcher(DB):
         # Iterate over a copy of the dictionary to avoid concurrent modification issues
         for email, info in list(DB.items()):
             port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
-            print(f"timestamp left {now - timestamp}")
+            print(f"timestamp left {timestamp}")
             if now - timestamp > 60:  # Check if the port was used for more than an hour
                 print(f"Cleaning up port {port} for email {email}")
                 try:
@@ -90,14 +90,21 @@ def index():
         if email not in DB:
             # Spin a new server here
             port, pid, timestamp = start_new_target_app()
+            print(f"old time {timestamp}")
             if port and pid:
                 DB[email] = {
                     "port": port,
                     "pid": pid,
                     "timestamp":timestamp
                 }
+            else:
+                return "No free ports available at the moment. Please try again later.", 500
             print(
                 f"New target_app started on port {port} with process id {pid}")
+        else:
+            # If the email already exists, update the "timestamp"
+            DB[email]["timestamp"] = time.time()
+            print(f"new time {time.time()}")
         port = DB[email]["port"]
         if not DB:  # Check if DB is empty
             print("DB is empty index")
