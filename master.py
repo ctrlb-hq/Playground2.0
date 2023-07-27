@@ -102,7 +102,8 @@ def index():
             return render_template("tic-tac-toe.html", port=port)
         else:
             # If the server is not responsive, redirect to index.html
-            return redirect("/", code=302)
+            print("error")
+            return f"Failed to get data from localhost:{port}", 500
     else:
         # If the request is a GET, we render the HTML form asking for the email.
         return render_template("index.html")

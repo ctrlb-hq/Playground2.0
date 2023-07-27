@@ -1,10 +1,13 @@
 var express = require('express');
 var path = require('path');
+const fs = require('fs');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var api = require('./Routes/api');
+const cors = require('cors'); // Import the cors middleware
 
 var app = express();
+app.use(cors()); // Enable CORS for all routes
 
 app.set('port', (process.argv[2] || 8000));
 
@@ -27,6 +30,19 @@ app.use('/api', (req, res, next) => {
 });
 
 app.use('/api', api);
+
+// Add a route to serve the contents of api.js
+app.get('/api/js', (req, res) => {
+  const apiJSFilePath = path.join(__dirname, '../Server/Routes/api.js');
+  fs.readFile(apiJSFilePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading api.js:', err);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(data);
+  });
+});
 
 app.get('/', function (req, res) {
 	//res.status(200).send('Hi. Tic Tac Toe Homepage');
