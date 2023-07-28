@@ -6,7 +6,6 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            height: 100%;
             margin: 0;
             padding: 0;
             display: flex;
@@ -16,53 +15,23 @@
         .left {
             background-color: #ffffff;
             position: absolute;
-            left: 0;
+            left: 0px;
             width: 60%;
+            max-width: 60%;
             height: 100vh;
-            /* Set the height to 100% to fill the available height */
-            overflow: hidden;
-            display: block;
+            overflow: auto;
         }
 
-        /* Add this CSS for CodeMirror editor */
-        .CodeMirror {
-            height: 100vh !important;
-            background-color: #3e3a3a !important;
-            color: rgb(225, 199, 199) !important;
-            /* Set the height to 100vh to fill the viewport height */
-        }
+        /* .left-content {
+            padding: 20px;
+        } */
 
-        .CodeMirror-gutters {
-            background-color: #000000 !important;
-        }
 
-        .CodeMirror-linenumber {
-            color: #bdadad !important;
-        }
-
-        /* Add this CSS for CodeMirror's parent container */
-        /* This ensures that CodeMirror's parent container also takes up the full viewport height */
-        .CodeMirror-scroll {
-            height: 100%;
-        }
-
-        /* Optionally, if any parent container of .CodeMirror-scroll has a height restriction, remove it */
-        /* This ensures that all parent elements allow the CodeMirror container to take up the full viewport height */
-        /* For example, if there's a class .container restricting height, you can override it like this: */
-        .container {
-            height: auto !important;
-        }
-
-        .CodeMirror-vscrollbar {
-            overflow-y: hidden !important;
-        }
-
-        /* #code {
+        #code {
             width: 60%;
             height: 100vh;
             float: left;
-        } */
-
+        }
 
         .right {
             background: linear-gradient(to bottom right, #ffc107, #ff5722);
@@ -245,15 +214,12 @@
             }
         }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <!-- Use CDN for CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css">
     <!-- Use CDN for CodeMirror JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script> -->
     <!-- Use CDN for language mode (e.g., JavaScript) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
-
-
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script> -->
 </head>
 
 <body>
@@ -327,7 +293,13 @@
     </div>
     <!-- <script src="resources/js/tic-tac-toe.js"></script> -->
     <script>
-
+        // var myTextArea = document.getElementById("myEditor");
+        //     var editor = CodeMirror.fromTextArea(myTextArea, {
+        //         lineNumbers: true,
+        //         mode: "javascript",
+        //         theme: "monokai", // Set the theme
+        //         lineWrapping: true // Enable line wrapping
+        //     });
         $(document).ready(function () {
 
             // fetch('../target_app/Server/Routes/api.js')
@@ -354,39 +326,7 @@
 
             // // Call the function to fetch and display the API code
             // fetchApiCode();
-
-            // var myTextArea = document.getElementById("myEditor");
-            // var editor = CodeMirror.fromTextArea(myTextArea, {
-            //     lineNumbers: true,
-            //     mode: "javascript",
-            //     theme: "monokai", // Set the theme
-            //     lineWrapping: true, // Enable line wrapping
-            // });
-
-
-            function fetchApiCode() {
-                $.ajax({
-                    type: "GET",
-                    url: `http://localhost:${port}/api/js`, // Replace with the correct URL to fetch api.js
-                    dataType: 'text',
-                    success: function (data) {
-                        // Create a new CodeMirror instance and set the content of api.js to it
-                        var editor = CodeMirror.fromTextArea(document.getElementById("myEditor"), {
-                            lineNumbers: true,
-                            mode: "javascript",
-                            theme: "monokai", // Set the theme as desired
-                            lineWrapping: true, // Enable line wrapping
-                        });
-                        editor.setValue(data); // Set the content of api.js to the CodeMirror editor
-                    },
-                    error: function (xhr, status, err) {
-                        console.error(status, err.toString());
-                    }
-                });
-            }
-
-            // Call the function to fetch and display the API code in CodeMirror format
-            fetchApiCode();
+            
 
             var gameBoard = ['', '', '', '', '', '', '', '', ''];
             var gameCounter = 0;
