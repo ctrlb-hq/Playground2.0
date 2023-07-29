@@ -367,7 +367,6 @@
 
         $(document).ready(function () {
             var port = `{{ port }}`;
-            var totalMarkers = 0;
             var editor = null; // Declare the editor variable globally
 
             // Function to add a tracepoint marker on click
@@ -380,14 +379,6 @@
                 cm.setGutterMarker(lineNumber, "tracepoint", marker, {
                     insertLeft: true
                 }); // Add the marker to the specified line number in the gutter
-                totalMarkers++;
-                console.log("tracepoint", marker);
-                console.log("gutter", gutter);
-                console.log(totalMarkers, cm, gutterIndex)
-                marker.addEventListener("click", function () {
-                    removeTracepointMarker(lineNumber);
-                    totalMarkers--;
-                });
             }
 
             // Function to remove a tracepoint marker on click
@@ -395,14 +386,20 @@
                 var cm = editor; // Get the CodeMirror instance
                 var gutters = cm.getOption("gutters"); // Get the list of gutters
                 var gutterIndex = gutters.indexOf("tracepoint"); // Find the index of the "tracepoint" gutter
-                cm.setGutterMarker(lineNumber - 1, "tracepoint", null); // Remove the marker from the specified line number in the gutter
+                cm.setGutterMarker(lineNumber, "tracepoint", null); // Remove the marker from the specified line number in the gutter
             }
 
             // Event listener to handle clicking on the line number gutter
             function gutterClick(cm, lineNumber, gutterID) {
                 console.log("line number", lineNumber, gutterID);
                 if (gutterID === "CodeMirror-linenumbers") {
-                    addTracepointMarker(lineNumber);
+                    var marker = cm.lineInfo(lineNumber).gutterMarkers && cm.lineInfo(lineNumber).gutterMarkers.tracepoint;
+                    if (marker) {
+                        removeTracepointMarker(lineNumber);
+                    }
+                    else {
+                        addTracepointMarker(lineNumber);
+                    }
                 }
             }
 
