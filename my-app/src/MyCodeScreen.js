@@ -1,5 +1,6 @@
 import React from 'react';
-import { CodeEditor, CodeOutput } from 'react-run-code';
+import CodeEditor from 'react-run-code';
+import CodeOutput from 'react-run-code';
 
 class MyCodeScreen extends React.Component {
   constructor(props) {
@@ -28,6 +29,7 @@ class MyCodeScreen extends React.Component {
   };
 
   render() {
+    const { output } = this.state;
     return (
       <div>
         <CodeEditor
@@ -35,7 +37,7 @@ class MyCodeScreen extends React.Component {
           onChange={this.handleCodeChange}
           onRun={this.handleRunCode}
         />
-        <CodeOutput output={this.state.output} />
+        {output?.length > 0 && <CodeOutput output={output} />}
       </div>
     );
   }
