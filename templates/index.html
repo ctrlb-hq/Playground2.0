@@ -20,24 +20,56 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 400px;
+            max-width: 500px;
             padding: 20px;
-            background-color: #cececeb8;
+            background-color: #e4e2e2eb;
             /* Updated with RGBA for transparency */
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin-right: 200px;
             margin-top: 20px;
-            width: 400px;
-            height: 220px;
+            width: 500px;
+            height: 330px;
         }
 
-        .dialog-heading {
+        .dialog>img{
+            margin-bottom: 3px;
+            padding: 0;
+            height: 45px;
+        }
+
+        .dialog>h3{
+            font-family: 'Dai Banna SIL', serif;
+            font-size: 20px;
+            margin: 5px;
+            padding: 0;
+        }
+        .dialog>h2{
+            font-size: 35px;
+            font-family: "Audiowide", sans-serif;
+            margin: 0px;
+            padding: 0;
+        }
+        .dialog>h5{
+            font-family: 'Dai Banna SIL', serif;
+            font-size: 15px;
+            margin: 15px;
+            padding: 0;
+        }
+        .dialog>h6{
+            font-size: 15px;
+            font-family: 'Edu SA Beginner', cursive;
+            margin: 0;
+            margin-bottom: 15px;
+            padding: 0;
+        }
+
+        /* .dialog-heading {
             font-size: 24px;
             color: #131415;
             margin-bottom: 30px;
             text-align: center;
-        }
+        } */
 
         form {
             display: flex;
@@ -88,19 +120,27 @@
             background-color: #0056b3;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dai+Banna+SIL:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
 </head>
 <body>
     <div class="dialog">
-        <div class="dialog-heading">Enter Your Email</div>
+        <img src="../static/img/ctrlb.jpg" alt="">
+        <h3>Welcome to</h3>
+        <h2>CtrlB's Playground</h2>
+        <h5>Play around and debug with the live debugger</h5>
+        <h6>Happy Coding :))))</h6>
+        <!-- <div class="dialog-heading">Enter Your Email</div> -->
         <form method="post">
             <div class="form-group">
                 <!-- <div class="input-wrap"> -->
-                    <label for="email">Email:</label>
+                    <!-- <label for="email">Email:</label> -->
                     <input type="email" id="email" name="email" placeholder="Enter your email..." required>
                 <!-- </div> -->
             </div>
             <div class="form-group">
-                <input type="submit" value="Submit">
+                <input type="submit" value="Let's get started">
             </div>
         </form>
     </div>
