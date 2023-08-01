@@ -53,6 +53,74 @@
             font-family: "Audiowide", sans-serif;
         }
 
+
+
+        .dialog-box {
+            position: fixed;
+            height: 240px;
+            width: 300px;
+            left: 42%;
+            top: 73px;
+            /* right: 0; */
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            z-index: 15;
+            /* margin: auto; */
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .dbox {
+            /* top: 0px; */
+            border-radius: 6px;
+            padding: 18px 26px;
+            right: 0;
+            margin: 17px;
+            height: 30px;
+            position: absolute;
+            display: inline-block;
+            background-color: rgb(225, 225, 166);
+            font-size: 15px;
+            font-family: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .dbox:hover {
+            background-color: rgb(221, 221, 140);
+            cursor: pointer;
+        }
+
+        /* .close-dbox {
+            position: absolute;
+            margin: 20px;
+            border-radius: 5px;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 6px 24px;
+            background-color: rgb(255, 175, 175);
+            font-weight: bold;
+            border: 2px #c90000;
+        }
+
+        .close-dbox:hover {
+            background-color: rgb(236, 95, 95);
+            cursor: pointer;
+        } */
+
         .editor-container {
             position: relative;
             border: 1px solid #ccc;
@@ -220,9 +288,11 @@
         }
 
         .play_as td.selected {
-        background-color: #00c853; /* Change background color of the selected tab */
-        color: white; /* Change text color to white for better visibility */
-    }
+            background-color: #00c853;
+            /* Change background color of the selected tab */
+            color: white;
+            /* Change text color to white for better visibility */
+        }
 
         .play_as td:hover {
             background-color: #b9b9b9;
@@ -368,7 +438,19 @@
         <div class="icon">
             <img src="../static/img/coding.png" alt="icon" class="img">
             <h1 class="header">Code</h1>
+
+            <div class="button-container">
+                <button id="openDialogButton" class="dbox">View Snapshot</button>
+                <div class="dialog-box" style="display: none;">
+
+                    <!-- <button id="closeDialogButton" class="close-dbox">Close</button> -->
+                </div>
+            </div>
+
+
+
         </div>
+
         <div class="editor-container">
             <textarea id="myEditor"></textarea>
             <div class="cm-tracepoint-gutter"></div>
@@ -440,6 +522,9 @@
         </div>
         <!-- <button class="newGame">New Game</button> -->
     </div>
+
+
+
     <!-- <script src="resources/js/tic-tac-toe.js"></script> -->
     <script>
 
@@ -512,12 +597,23 @@
 
             // Call the function to fetch and display the API code in CodeMirror format
             fetchApiCode();
-            // editor.on("gutterClick", gutterClick);
 
-            // Event listener to handle clicking on the line number gutter
-            // editor.on("gutterClick", function (cm, lineNumber) {
-            //     addTracepoint(lineNumber);
-            // });
+
+            var dialogBoxVisible = false;
+
+            $('#openDialogButton').on('click', function () {
+                if (dialogBoxVisible) {
+                    $('.dialog-box').hide();
+                } else {
+                    $('.dialog-box').show();
+                }
+                dialogBoxVisible = !dialogBoxVisible;
+            });
+
+            $('#closeDialogButton').on('click', function (event) {
+                // Prevent the default behavior of the button, so it doesn't close the dialog
+                event.preventDefault();
+            });
 
 
             var gameBoard = ['', '', '', '', '', '', '', '', ''];
