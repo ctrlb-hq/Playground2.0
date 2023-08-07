@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
+from flask_cors import CORS
 import subprocess
 import time
 import os
@@ -6,6 +7,7 @@ import threading
 import requests
 
 app = Flask(__name__)
+CORS(app)
 
 DB = {}
 PORTS_USED = set()
@@ -107,7 +109,18 @@ def index():
     else:
         # If the request is a GET, we render the HTML form asking for the email.
         return render_template("index.html")
-    
+
+@app.route('/tracepoint', methods=['POST'])
+def receive_request():
+    data = request.get_json()
+    port = data.get('port')
+    lineNumber = data.get('lineNumber')
+    print(f"Received request from port {port} for line number {lineNumber}")
+    # Your code to handle the received request goes here
+    # ...
+
+    response_data = {'message': 'Request received successfully!'}
+    return jsonify(response_data), 200
 
 if __name__ == "__main__":
     # Start the port watcher as a separate thread
