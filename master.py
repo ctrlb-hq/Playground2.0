@@ -5,14 +5,23 @@ import time
 import os
 import threading
 import requests
+import websockets
+import asyncio
+import json
+from datetime import datetime
+import pytz
+import hashlib 
+import secrets
+import string
 
 app = Flask(__name__)
 CORS(app)
 
-DB = {}
-PORTS_USED = set()
 # Flag to signal the port_watcher thread to stop
 stop_port_watcher = False
+DB = {}
+PORTS_USED = set()
+
 
 def get_free_port():
     """Find and return an available free port."""
@@ -72,6 +81,256 @@ def check_server_availability(port):
         return False
 
 
+CLIENT_WEBSOCKET = None
+CODE_TO_DEBUG = "./target_app/Server/Routes/api.js"
+OUTPUT_DEBUGEE = []
+LIVE_SNAPSHOTS = []
+FRONTEND_TRACEPOINTS = []
+LINENO_TO_TRACEPOINTID_MAP = {}
+REQUESTID_TO_LINENO_MAP = {}
+
+
+def get_time():
+    current_time = datetime.now(pytz.utc)
+    timezone = pytz.timezone("Europe/London")  # Replace "Your_Timezone" with the desired timezone
+    localized_time = current_time.astimezone(timezone)
+    return localized_time.strftime("%Y-%m-%d %H:%M:%S %Z%z")
+
+def generate_random_string(length):
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(secrets.choice(characters) for _ in range(length))
+    return random_string
+
+def get_source_code(file_path):
+    if file_path is None or file_path.endswith('.pyc'):
+        return None
+    try:
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+            return file_content
+    except IOError as e:
+        print('Error reading file from file path: ' + file_path + ' err:', e)
+    return None
+
+def get_source_code_hash(file_path):
+    source_code = get_source_code(file_path)
+    if source_code is None:
+        return None
+
+    source_code = source_code.decode().replace('\r\n', '\n') \
+        .replace('\r\x00\n\x00', '\n\x00') \
+        .replace('\r', '\n').encode('UTF8')
+
+    try:
+        source_hash = hashlib.sha256(source_code).hexdigest()
+        return source_hash
+    except Exception as e:
+        print('Unable to calculate hash of source code from file %s error: %s' % (file_path, e))
+
+    return None
+
+
+# async def websocket_handler(websocket, path):
+#     global CLIENT_WEBSOCKET
+#     global LIVE_SNAPSHOTS
+#     global REQUESTID_TO_LINENO_MAP
+#     global FRONTEND_TRACEPOINTS
+#     assert path=="/master"
+#     CLIENT_WEBSOCKET = websocket
+#     try:
+#         async for message in websocket:
+#             message_json = json.loads(message)
+#             if(message_json["name"] in ["TracePointSnapshotEvent"] ):
+#                 live_message = {}
+#                 live_message["timestamp"] = get_time()
+#                 live_message["fileName"] = message_json["fileName"][:message_json["fileName"].index("?")]
+#                 live_message["methodName"] = message_json["methodName"]
+#                 live_message["lineNo"] = message_json["lineNo"]
+#                 live_message["traceId"] = message_json["traceId"]
+#                 live_message["spanId"] = message_json["spanId"]
+#                 if len(message_json["frames"])>0 and "variables" in message_json["frames"][0]:
+#                     live_message["variables"] = message_json["frames"][0]["variables"]
+#                 LIVE_SNAPSHOTS.append(json.dumps(live_message))
+#             if(message_json["name"] == "PutTracePointResponse"):
+#                 if(message_json["erroneous"]==False):
+#                     lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+#                     FRONTEND_TRACEPOINTS[lineno-1] = True
+#                     del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+#             if(message_json["name"] == "RemoveTracePointResponse"):
+#                 if(message_json["erroneous"]==False):
+#                     lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+#                     FRONTEND_TRACEPOINTS[lineno-1] = False
+#                     del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+#             # print(message)
+#     except websockets.exceptions.ConnectionClosedOK:
+#         pass  # Connection closed gracefully
+#     except Exception as e:
+#         print(f"WebSocket error: {e}")
+#     finally:
+#         CLIENT_WEBSOCKET = None  # Reset the global variable on connection close
+#         # You can add a reconnection logic here
+#         retry_interval = 5  # Adjust the interval as needed
+#         while True:
+#             try:
+#                 print("Trying to reconnect...")
+#                 async with websockets.connect('ws://localhost:8094/app') as new_websocket:
+#                     await websocket_handler(new_websocket, path)
+#             except Exception as e:
+#                 print(f"Reconnection failed. Retrying in {retry_interval} seconds.")
+#                 time.sleep(retry_interval)
+
+
+# # start a websocker server on a thread
+# def run_websocket_server():
+#     loop = asyncio.new_event_loop()
+#     asyncio.set_event_loop(loop)
+#     start_server = websockets.serve(websocket_handler, 'localhost', 8094)
+#     print("running7")
+#     loop.run_until_complete(start_server)
+#     loop.run_forever()
+
+
+# start a WebSocket server on a thread
+def run_websocket_server():
+    global CLIENT_WEBSOCKET
+    async def websocket_handler(websocket, path):
+        global CLIENT_WEBSOCKET
+        global LIVE_SNAPSHOTS
+        global REQUESTID_TO_LINENO_MAP
+        global FRONTEND_TRACEPOINTS
+        assert path == "/ws/app"
+        CLIENT_WEBSOCKET = websocket
+        print("client webso", CLIENT_WEBSOCKET)
+        try:
+            async for message in websocket:
+                message_json = json.loads(message)
+                print("message_json1=", message_json)
+                if(message_json["name"] in ["TracePointSnapshotEvent"] ):
+                    live_message = {}
+                    live_message["timestamp"] = get_time()
+                    live_message["fileName"] = message_json["fileName"][:message_json["fileName"].index("?")]
+                    live_message["methodName"] = message_json["methodName"]
+                    live_message["lineNo"] = message_json["lineNo"]
+                    live_message["traceId"] = message_json["traceId"]
+                    live_message["spanId"] = message_json["spanId"]
+                    if len(message_json["frames"])>0 and "variables" in message_json["frames"][0]:
+                        live_message["variables"] = message_json["frames"][0]["variables"]
+                    LIVE_SNAPSHOTS.append(json.dumps(live_message))
+                if(message_json["name"] == "PutTracePointResponse"):
+                    if(message_json["erroneous"]==False):
+                        lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+                        FRONTEND_TRACEPOINTS[lineno-1] = True
+                        del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+                if(message_json["name"] == "RemoveTracePointResponse"):
+                    if(message_json["erroneous"]==False):
+                        lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+                        FRONTEND_TRACEPOINTS[lineno-1] = False
+                        del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+        except websockets.exceptions.ConnectionClosedOK:
+            pass  # Connection closed gracefully
+        except Exception as e:
+            print(f"WebSocket error: {e}")
+        finally:
+            CLIENT_WEBSOCKET = None  # Reset the global variable on connection close
+            # You can add a reconnection logic here
+            retry_interval = 5  # Adjust the interval as needed
+            while True:
+                try:
+                    print("Trying to reconnect...")
+                    async with websockets.connect('ws://localhost:8094/ws/app') as new_websocket:
+                        await websocket_handler(new_websocket, path)
+                except Exception as e:
+                    print(f"Reconnection failed. Retrying in {retry_interval} seconds.")
+                    time.sleep(retry_interval)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    start_server = websockets.serve(websocket_handler, 'localhost', 8094)
+    print("WebSocket server running...")
+    loop.run_until_complete(start_server)
+    loop.run_forever()
+
+
+
+async def _serialize_and_send(message_json):
+    message_serialized = json.dumps(message_json)
+
+    await CLIENT_WEBSOCKET.send(message_serialized)
+
+async def sendPutTracepoint(line_no):
+    global LINENO_TO_TRACEPOINTID_MAP
+    global CLIENT_WEBSOCKET
+    global REQUESTID_TO_LINENO_MAP
+    if CLIENT_WEBSOCKET is None:
+        print("WebSocket connection is not yet established. Skipping sendPutTracepoint.")
+        return
+    print("is it run")
+    file_hash = get_source_code_hash(CODE_TO_DEBUG)
+    tracePointId = generate_random_string(7)
+    requestId = generate_random_string(7)
+    message_json = {
+        "name":"PutTracePointRequest",
+        "type":"Request",
+        "id":requestId,
+        "client":"simulated_client_api",
+        "tracePointId":tracePointId,
+        "fileName":f"{CODE_TO_DEBUG}?ref=REF",
+        "fileHash":file_hash,
+        "lineNo":line_no,
+        "enableTracing":True,
+        "conditionExpression":None,
+    }
+    await _serialize_and_send(message_json)
+    LINENO_TO_TRACEPOINTID_MAP[line_no] = tracePointId
+    REQUESTID_TO_LINENO_MAP[requestId] = line_no
+
+async def sendRemoveTracepoint(line_no):
+    global FRONTEND_TRACEPOINTS
+    global REQUESTID_TO_LINENO_MAP
+    file_hash = get_source_code_hash(CODE_TO_DEBUG)
+    tracePointId = LINENO_TO_TRACEPOINTID_MAP[line_no]
+    requestId = generate_random_string(7)
+    message_json = {
+        "name":"RemoveTracePointRequest",
+        "type":"Request",
+        "id":requestId,
+        "client":"simulated_client_api",
+        "tracePointId":tracePointId,
+        "fileName":f"{CODE_TO_DEBUG}?ref=REF",
+        "fileHash":file_hash,
+        "lineNo":line_no,
+        "enableTracing":True,
+        "conditionExpression":None,
+    }
+    await _serialize_and_send(message_json)
+    REQUESTID_TO_LINENO_MAP[requestId] = line_no
+
+
+@app.route('/tracepoint', methods=['POST'])
+def receive_request():
+    data = request.get_json()
+    port = data.get('port')
+    lineNumber = data.get('lineNumber')
+    print(f"Received request from port {port} for line number {lineNumber}")
+    # Code to handle the received request 
+    asyncio.run(sendPutTracepoint(lineNumber))
+    response_data = {'message': 'Request received successfully!'}
+    return jsonify(response_data), 200
+
+# @app.route('/removetracepoint', methods=['POST'])
+# def remove_tracepoint():
+#     data = request.get_json()
+#     port = data.get('port')
+#     lineNumber = data.get('lineNumber')
+#     print(f"Received request to remove tracepoint from port {port} for line number {lineNumber}")
+
+#     # Call the function to send the RemoveTracepoint request
+#     asyncio.run(sendRemoveTracepoint(port, lineNumber))
+
+#     response_data = {'message': 'Request received successfully!'}
+#     return jsonify(response_data), 200
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     global DB
@@ -109,23 +368,17 @@ def index():
     else:
         # If the request is a GET, we render the HTML form asking for the email.
         return render_template("index.html")
-
-@app.route('/tracepoint', methods=['POST'])
-def receive_request():
-    data = request.get_json()
-    port = data.get('port')
-    lineNumber = data.get('lineNumber')
-    print(f"Received request from port {port} for line number {lineNumber}")
-    # Your code to handle the received request goes here
-    # ...
-
-    response_data = {'message': 'Request received successfully!'}
-    return jsonify(response_data), 200
+    
+# @app.route('/app')
+# def websocket_client():
+#     return render_template('./templates/websocket_client.html')
 
 if __name__ == "__main__":
     # Start the port watcher as a separate thread
     watcher_thread = threading.Thread(target=port_watcher, args=(DB,), daemon=True)
     watcher_thread.start()
+    websocket_thread = threading.Thread(target=run_websocket_server, daemon=True)
+    websocket_thread.start()
     try:
         app.run(debug=True, port=5001, host="0.0.0.0")
     except KeyboardInterrupt:

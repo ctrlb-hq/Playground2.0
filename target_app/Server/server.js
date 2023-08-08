@@ -1,3 +1,12 @@
+require('dotenv').config();
+
+const heimdall = require('@ctrlb/heimdall');
+
+heimdall.start({ 
+
+ });
+
+const WebSocket = require('ws');
 var express = require('express');
 var path = require('path');
 const fs = require('fs');
@@ -52,5 +61,29 @@ app.get('/', function (req, res) {
 app.all('*', function (req, res) {
   res.status(404).send('Nothing Here');
 });
+
+// Create a WebSocket server
+// const wss = new WebSocket.Server({ server });
+
+// // WebSocket connection handling
+// wss.on('connection', (ws) => {
+//   console.log('WebSocket client connected.');
+
+//   // Event handler for receiving messages from the WebSocket client
+//   ws.on('message', (message) => {
+//     console.log('Received message from client:', message);
+//     // Handle the received message here
+//   });
+
+//   // Event handler for WebSocket errors
+//   ws.on('error', (error) => {
+//     console.error('WebSocket error:', error);
+//   });
+
+//   // Event handler for when the WebSocket connection is closed
+//   ws.on('close', () => {
+//     console.log('WebSocket client disconnected.');
+//   });
+// });
 
 module.exports = server;

@@ -547,6 +547,29 @@
                     }
                 });
             }
+
+
+            // Function to make an AJAX request to remove the tracepoint on the server
+            function sendRemoveTracepointRequest(port, lineNumber) {
+                $.ajax({
+                    url: 'http://127.0.0.1:5001/removetracepoint',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        port: port,
+                        lineNumber: lineNumber
+                    }),
+                    success: function (data) {
+                        // On success, remove the marker from the specified line number in the gutter
+                        var cm = editor; // Get the CodeMirror instance
+                        cm.setGutterMarker(lineNumber, "tracepoint", null);
+                        console.log("Tracepoint removed successfully");
+                    },
+                    error: function (error) {
+                        console.error("Failed to remove tracepoint:", error);
+                    }
+                });
+            }
             // Function to add a tracepoint marker on click
             function addTracepointMarker(lineNumber) {
                 var marker = document.createElement("div");
@@ -565,6 +588,7 @@
                 var cm = editor; // Get the CodeMirror instance
                 var gutters = cm.getOption("gutters"); // Get the list of gutters
                 var gutterIndex = gutters.indexOf("tracepoint"); // Find the index of the "tracepoint" gutter
+                // sendRemoveTracepointRequest(port, lineNumber);
                 cm.setGutterMarker(lineNumber, "tracepoint", null); // Remove the marker from the specified line number in the gutter
             }
 
@@ -615,97 +639,60 @@
             fetchApiCode();
 
 
-        var dialogBoxVisible = false;
+            var dialogBoxVisible = false;
 
-        $('#openDialogButton').on('click', function () {
-            if (dialogBoxVisible) {
-                $('.dialog-box').hide();
-            } else {
-                $('.dialog-box').show();
+            $('#openDialogButton').on('click', function () {
+                if (dialogBoxVisible) {
+                    $('.dialog-box').hide();
+                } else {
+                    $('.dialog-box').show();
+                }
+                dialogBoxVisible = !dialogBoxVisible;
+            });
+
+            $('#closeDialogButton').on('click', function (event) {
+                // Prevent the default behavior of the button, so it doesn't close the dialog
+                event.preventDefault();
+            });
+
+
+            var gameBoard = ['', '', '', '', '', '', '', '', ''];
+            var gameCounter = 0;
+            var gameStatus = 'In Progress'
+
+            $('.square').one('click', gameClick);
+            $('.newGame h2').on('click', newGame);
+            $('#O').one('click', playerO);
+
+            function playerTurn(count) {
+                return count % 2 === 0 ? 'X' : 'O'
             }
-            dialogBoxVisible = !dialogBoxVisible;
-        });
 
-        $('#closeDialogButton').on('click', function (event) {
-            // Prevent the default behavior of the button, so it doesn't close the dialog
-            event.preventDefault();
-        });
+            function addToBoard(index) {
+                return gameBoard[index] = playerTurn(gameCounter);
+            }
 
-
-        var gameBoard = ['', '', '', '', '', '', '', '', ''];
-        var gameCounter = 0;
-        var gameStatus = 'In Progress'
-
-        $('.square').one('click', gameClick);
-        $('.newGame h2').on('click', newGame);
-        $('#O').one('click', playerO);
-
-        function playerTurn(count) {
-            return count % 2 === 0 ? 'X' : 'O'
-        }
-
-        function addToBoard(index) {
-            return gameBoard[index] = playerTurn(gameCounter);
-        }
-
-        function computerMove() {
-            $.ajax({
-                type: "POST",
-                url: `http://localhost:${port}/api/move`,
-                data: { board: JSON.stringify(gameBoard) },
-                dataType: 'json',
-                success: function (obj) {
-                    var index = obj.nextMove;
-                    addToBoard(index);
-                    $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
-                    $('#' + index.toString()).unbind('click');
-                    gameCounter++;
-                    winner();
-                },
-                error: function (xhr, status, err) {
-                    console.error(status, err.toString());
-                }
-            });
-        }
-
-        function winner() {
-            $.ajax({
-                type: "POST",
-                url: `http://localhost:${port}/api/winner`,
-                data: { board: JSON.stringify(gameBoard) },
-                dataType: 'json',
-                success: function (obj) {
-                    gameStatus = obj.winner;
-                    if (gameStatus !== 'In Progress') {
-                        $('.outcome h2').text(gameStatus);
+            function computerMove() {
+                $.ajax({
+                    type: "POST",
+                    url: `http://localhost:${port}/api/move`,
+                    data: { board: JSON.stringify(gameBoard) },
+                    dataType: 'json',
+                    success: function (obj) {
+                        var index = obj.nextMove;
+                        addToBoard(index);
+                        $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
+                        $('#' + index.toString()).unbind('click');
+                        gameCounter++;
+                        winner();
+                    },
+                    error: function (xhr, status, err) {
+                        console.error(status, err.toString());
                     }
-                },
-                error: function (xhr, status, err) {
-                    console.error(status, err.toString());
-                }
-            });
-        }
+                });
+            }
 
-        function newGame() {
-            gameBoard = ['', '', '', '', '', '', '', '', ''];
-            gameCounter = 0;
-            gameStatus = 'In Progress';
-            $('.square').unbind('click').one('click', gameClick);
-            $('#O').unbind('click').one('click', playerO);
-            $('.square h2').empty();
-            $('.outcome h2').empty();
-            $('#X').css({ 'background-color': 'lightgreen' });
-            $('#O').css({ 'background-color': 'white' });
-            return 'new game';
-        }
-
-        function gameClick(event) {
-            var square = $(event.currentTarget);
-            var index = square.attr('id');
-            if (gameStatus === 'In Progress') {
-                $('#' + index).find('h2').text(playerTurn(gameCounter));
-                addToBoard(parseInt(index));
-                gameCounter++;
+            function winner() {
                 $.ajax({
                     type: "POST",
                     url: `http://localhost:${port}/api/winner`,
@@ -715,25 +702,62 @@
                         gameStatus = obj.winner;
                         if (gameStatus !== 'In Progress') {
                             $('.outcome h2').text(gameStatus);
-                        } else {
-                            computerMove();
                         }
                     },
                     error: function (xhr, status, err) {
                         console.error(status, err.toString());
                     }
                 });
-                if (gameCounter > 0) {
-                    $('#O').off('click', playerO);
+            }
+
+            function newGame() {
+                gameBoard = ['', '', '', '', '', '', '', '', ''];
+                gameCounter = 0;
+                gameStatus = 'In Progress';
+                $('.square').unbind('click').one('click', gameClick);
+                $('#O').unbind('click').one('click', playerO);
+                $('.square h2').empty();
+                $('.outcome h2').empty();
+                $('#X').css({ 'background-color': 'lightgreen' });
+                $('#O').css({ 'background-color': 'white' });
+                return 'new game';
+            }
+
+            function gameClick(event) {
+                var square = $(event.currentTarget);
+                var index = square.attr('id');
+                if (gameStatus === 'In Progress') {
+                    $('#' + index).find('h2').text(playerTurn(gameCounter));
+                    addToBoard(parseInt(index));
+                    gameCounter++;
+                    $.ajax({
+                        type: "POST",
+                        url: `http://localhost:${port}/api/winner`,
+                        data: { board: JSON.stringify(gameBoard) },
+                        dataType: 'json',
+                        success: function (obj) {
+                            gameStatus = obj.winner;
+                            if (gameStatus !== 'In Progress') {
+                                $('.outcome h2').text(gameStatus);
+                            } else {
+                                computerMove();
+                            }
+                        },
+                        error: function (xhr, status, err) {
+                            console.error(status, err.toString());
+                        }
+                    });
+                    if (gameCounter > 0) {
+                        $('#O').off('click', playerO);
+                    }
                 }
             }
-        }
 
-        function playerO(event) {
-            $('#X').css({ 'background-color': 'white' });
-            $('#O').css({ 'background-color': 'lightgreen' });
-            computerMove();
-        }
+            function playerO(event) {
+                $('#X').css({ 'background-color': 'white' });
+                $('#O').css({ 'background-color': 'lightgreen' });
+                computerMove();
+            }
 
         });
 

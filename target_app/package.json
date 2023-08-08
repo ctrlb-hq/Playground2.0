@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/nongaap/tic-tac-toe#readme",
   "dependencies": {
+    "@ctrlb/heimdall": "^1.0.6",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
+    "dotenv": "^16.3.1",
     "express": "^4.14.0"
   },
   "devDependencies": {

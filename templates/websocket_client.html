@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <div id="output"></div>
+
+    <script>
+        const outputDiv = document.getElementById("output");
+        const socket = new WebSocket("ws://localhost:8094/app");
+
+        socket.onopen = (event) => {
+            outputDiv.innerHTML = "WebSocket connection established!";
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            outputDiv.innerHTML = `Received: ${JSON.stringify(data)}`;
+        };
+
+        socket.onclose = (event) => {
+            outputDiv.innerHTML = "WebSocket connection closed.";
+        };
+
+        socket.onerror = (error) => {
+            outputDiv.innerHTML = `WebSocket error: ${error.message}`;
+        };
+
+        function sendMessage() {
+            const message = { text: "Hello, WebSocket server!" };
+            socket.send(JSON.stringify(message));
+        }
+    </script>
+</body>
+</html>
