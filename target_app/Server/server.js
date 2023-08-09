@@ -2,9 +2,9 @@ require('dotenv').config();
 
 const heimdall = require('@ctrlb/heimdall');
 
-heimdall.start({ 
+// heimdall.start({ 
 
- });
+//  });
 
 const WebSocket = require('ws');
 var express = require('express');
@@ -25,7 +25,6 @@ var server = app.listen(app.get('port'), function() {
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname,'../../templates')));
 
 app.use(cookieParser());
 
@@ -53,37 +52,8 @@ app.get('/api/js', (req, res) => {
   });
 });
 
-app.get('/', function (req, res) {
-	//res.status(200).send('Hi. Tic Tac Toe Homepage');
-  res.sendFile(path.join(__dirname,'../../templates','tic-tac-toe.html'));
-});
-
 app.all('*', function (req, res) {
   res.status(404).send('Nothing Here');
 });
-
-// Create a WebSocket server
-// const wss = new WebSocket.Server({ server });
-
-// // WebSocket connection handling
-// wss.on('connection', (ws) => {
-//   console.log('WebSocket client connected.');
-
-//   // Event handler for receiving messages from the WebSocket client
-//   ws.on('message', (message) => {
-//     console.log('Received message from client:', message);
-//     // Handle the received message here
-//   });
-
-//   // Event handler for WebSocket errors
-//   ws.on('error', (error) => {
-//     console.error('WebSocket error:', error);
-//   });
-
-//   // Event handler for when the WebSocket connection is closed
-//   ws.on('close', () => {
-//     console.log('WebSocket client disconnected.');
-//   });
-// });
 
 module.exports = server;
