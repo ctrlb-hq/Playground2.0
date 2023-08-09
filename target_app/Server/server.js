@@ -52,6 +52,10 @@ app.get('/api/js', (req, res) => {
   });
 });
 
+app.get('/ping', (req, res) => {
+  res.send('pong');
+});
+
 app.all('*', function (req, res) {
   res.status(404).send('Nothing Here');
 });

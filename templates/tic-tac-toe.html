@@ -2,410 +2,7 @@
 
 <head>
     <title>Tic-Tac-Toe</title>
-    <!-- <link rel="stylesheet" href="resources/css/style.css"> -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-
-
-
-
-
-        .left {
-            background-color: #272727;
-            position: absolute;
-            left: 0;
-            /* bottom: 0; */
-            width: 60%;
-            height: 100vh;
-            /* Set the height to 100% to fill the available height */
-            overflow: hidden;
-            display: block;
-        }
-
-        .icon {
-            display: inline-flex;
-            height: 10vh;
-        }
-
-        .icon>img {
-            margin-left: 20px;
-            margin-top: 10px;
-            height: 50px;
-            /* background-color: white; */
-        }
-
-        .h1>.header {
-            height: 10px;
-            margin: auto;
-
-
-        }
-
-        .header {
-            margin-left: 10px;
-            color: #a9a9a9;
-            font-family: "Audiowide", sans-serif;
-        }
-
-
-
-        .dialog-box {
-            position: fixed;
-            height: 240px;
-            width: 300px;
-            left: 42%;
-            top: 73px;
-            /* right: 0; */
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            z-index: 15;
-            /* margin: auto; */
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .dbox {
-            /* top: 0px; */
-            border-radius: 6px;
-            padding: 18px 26px;
-            right: 0;
-            margin: 17px;
-            height: 30px;
-            position: absolute;
-            display: inline-block;
-            background-color: rgb(225, 225, 166);
-            font-size: 15px;
-            font-family: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .dbox:hover {
-            background-color: rgb(221, 221, 140);
-            cursor: pointer;
-        }
-
-        /* .close-dbox {
-            position: absolute;
-            margin: 20px;
-            border-radius: 5px;
-            bottom: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: white;
-            padding: 6px 24px;
-            background-color: rgb(255, 175, 175);
-            font-weight: bold;
-            border: 2px #c90000;
-        }
-
-        .close-dbox:hover {
-            background-color: rgb(236, 95, 95);
-            cursor: pointer;
-        } */
-
-        .editor-container {
-            position: relative;
-            border: 1px solid #ccc;
-            /* Add the border property with desired style and color */
-            border-radius: 5px;
-        }
-
-        /* Add this CSS for CodeMirror editor */
-        .CodeMirror {
-            height: 90vh !important;
-            border-left: 1px solid #ccc !important;
-            /* border: #f8f6f6 !important; */
-            /* bottom: 0 !important; */
-
-        }
-
-        .CodeMirror-gutters {
-            /* cursor: pointer; */
-            border-right: 1px solid #ccc !important;
-            /* Add the right border to separate line numbers and code */
-        }
-
-
-        /* Add this CSS for CodeMirror's parent container */
-        /* This ensures that CodeMirror's parent container also takes up the full viewport height */
-        .CodeMirror-scroll {
-            height: 100%;
-        }
-
-        /* Optionally, if any parent container of .CodeMirror-scroll has a height restriction, remove it */
-        /* This ensures that all parent elements allow the CodeMirror container to take up the full viewport height */
-        /* For example, if there's a class .container restricting height, you can override it like this: */
-        .container {
-            height: auto !important;
-        }
-
-        .CodeMirror-vscrollbar {
-            overflow-y: hidden !important;
-        }
-
-        .cm-tracepoint-gutter {
-            /* cursor: pointer; */
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            width: 30px;
-            margin-right: 5px;
-        }
-
-        /* Add the line marker styling */
-        .line-marker {
-            position: absolute;
-            border-radius: 50%;
-            margin-top: 3px;
-            top: 0;
-            bottom: 0;
-            left: -10px;
-            width: 10px;
-            height: 10px;
-            /* cursor: pointer; */
-            background-color: red;
-            z-index: 10;
-
-        }
-
-        .CodeMirror-linenumber {
-            /* cursor: pointer; */
-            padding-right: 12px;
-            /* Add this to center the line numbers */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            /* Update the width of the line numbers section */
-            width: 30px;
-        }
-
-        .right {
-            background: linear-gradient(to bottom right, #ff072e52, #ae22ff47);
-            position: absolute;
-            right: 0px;
-            width: 40%;
-            height: 100vh;
-            bottom: 0;
-        }
-
-        .gameplay>h2 {
-            font-family: 'Lobster', cursive;
-            font-size: 50px;
-            text-shadow: 3px 3px 3px #ababab;
-            margin-bottom: 40px;
-            margin-top: 30px;
-        }
-
-        .gameplay>h3 {
-            font-family: 'Handjet', cursive;
-            font-size: 20px;
-            text-shadow: 1px 1px 1px #ababab;
-        }
-
-        h2,
-        h3 {
-            margin: 0;
-            padding: 0;
-        }
-
-        h2 {
-            font-size: 1.5rem;
-        }
-
-        h3 {
-            font-size: 1rem;
-        }
-
-        .gameplay,
-        .play_as,
-        .board,
-        .outcome,
-        .newGame {
-            text-align: center;
-            margin-top: 20px;
-            animation: fadeIn 1s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .gameplay h3 {
-            color: #333;
-        }
-
-        .play_as {
-            margin-bottom: 20px;
-            /* display: flex; */
-            /* Add flex display to align tabs horizontally */
-            /* justify-content: center; */
-            /* Center the tabs horizontally */
-        }
-
-        .play_as td {
-            position: relative;
-            left: 25%;
-            width: 30%;
-            margin: 0 5px;
-            /* Add margin to create space between tabs */
-            background-color: #f8f6f6;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-
-        }
-
-        .play_as td.selected {
-            background-color: #00c853;
-            /* Change background color of the selected tab */
-            color: white;
-            /* Change text color to white for better visibility */
-        }
-
-        .play_as td:hover {
-            background-color: #b9b9b9;
-        }
-
-        .play_as td h2 {
-            padding: 5px;
-            color: #333;
-        }
-
-        .board {
-            margin: auto;
-            border-collapse: collapse;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .board .square {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            text-align: center;
-            cursor: pointer;
-            background-color: #eeb7f94a;
-            border: 2px solid #960ba4;
-            color: #39047d;
-            transition: background-color 0.3s ease;
-        }
-
-        .board .square:hover {
-            background-color: #d973ed4a;
-            transform: scale(1.05);
-        }
-
-        .board .square.disabled {
-            cursor: not-allowed;
-            background-color: #ccc;
-            animation: pulse 1s ease infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .board .square::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 80px;
-        }
-
-        .board .square.x::before {
-            background-image: url("x.png");
-        }
-
-        .board .square.o::before {
-            background-image: url("o.png");
-        }
-
-        .outcome {
-            color: #333;
-            margin-top: 20px;
-            animation: fadeIn 1s ease;
-        }
-
-        .newGame {
-            margin-top: 20px;
-            position: absolute;
-            left: 37%;
-            /* margin: auto; */
-            /* transform: translateX(-50%); */
-            cursor: pointer;
-            background-color: #1288b7;
-            color: #fff;
-            padding: 10px 20px;
-            display: inline-block;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            animation: slideIn 1s ease;
-        }
-
-        .newGame:hover {
-            background-color: #1833ad;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-            }
-
-            to {
-                transform: translateY(0);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Handjet&display=swap" rel="stylesheet">
@@ -429,43 +26,27 @@
 </head>
 
 <body>
-    <!-- <header class="header">
-        <img src="../static/img/newctrlb.png" alt="Header Icon">
-
-    </header> -->
     <div class="left">
-        <!-- <img src="../static/img/newctrlb.png" alt="Header Icon"> -->
         <div class="icon">
-            <img src="../static/img/coding.png" alt="icon" class="img">
+            <img src={{ url_for('static', filename='img/coding.png') }} alt="icon" class="img">
             <h1 class="header">Code</h1>
-
             <div class="button-container">
                 <button id="openDialogButton" class="dbox">View Snapshot</button>
                 <div class="dialog-box" style="display: none;">
-
                     <!-- <button id="closeDialogButton" class="close-dbox">Close</button> -->
                 </div>
             </div>
-
-
-
         </div>
-
         <div class="editor-container">
             <textarea id="myEditor"></textarea>
             <div class="cm-tracepoint-gutter"></div>
         </div>
     </div>
-
-
     <div class="right">
-
-
         <div class="gameplay">
             <h2>Tic Tac Toss-up</h2>
             <h3>To start game click on board to play as 'X' or click on 'Player O' to go second.</h3>
         </div>
-
         <table class="play_as">
             <tr>
                 <td class="player" id="X">
@@ -524,10 +105,7 @@
     </div>
 
 
-
-    <!-- <script src="resources/js/tic-tac-toe.js"></script> -->
     <script>
-
         $(document).ready(function () {
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
@@ -536,7 +114,7 @@
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
                     type: "POST",
-                    url: `http://127.0.0.1:5001/tracepoint`, // Replace this with your master.py endpoint
+                    url: '/tracepoint', // Replace this with your master.py endpoint
                     data: JSON.stringify({ port: port, lineNumber: lineNumber }),
                     contentType: "application/json",
                     success: function (response) {
@@ -552,7 +130,7 @@
             // Function to make an AJAX request to remove the tracepoint on the server
             function sendRemoveTracepointRequest(port, lineNumber) {
                 $.ajax({
-                    url: 'http://127.0.0.1:5001/removetracepoint',
+                    url: '/removetracepoint',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -609,7 +187,7 @@
             function fetchApiCode() {
                 $.ajax({
                     type: "GET",
-                    url: `http://localhost:${port}/api/js`, // Replace with the correct URL to fetch api.js
+                    url: '{{ server_url }}:{{ port }}/api/js', // Replace with the correct URL to fetch api.js
                     dataType: 'text',
                     success: function (data) {
                         // Create a new CodeMirror instance and set the content of api.js to it
@@ -675,7 +253,7 @@
             function computerMove() {
                 $.ajax({
                     type: "POST",
-                    url: `http://localhost:${port}/api/move`,
+                    url: '{{ server_url }}:{{ port }}/api/move',
                     data: { board: JSON.stringify(gameBoard) },
                     dataType: 'json',
                     success: function (obj) {
@@ -695,7 +273,7 @@
             function winner() {
                 $.ajax({
                     type: "POST",
-                    url: `http://localhost:${port}/api/winner`,
+                    url: '{{ server_url }}:{{ port }}/api/winner',
                     data: { board: JSON.stringify(gameBoard) },
                     dataType: 'json',
                     success: function (obj) {
@@ -732,7 +310,7 @@
                     gameCounter++;
                     $.ajax({
                         type: "POST",
-                        url: `http://localhost:${port}/api/winner`,
+                        url: '{{ server_url }}:{{ port }}/api/winner',
                         data: { board: JSON.stringify(gameBoard) },
                         dataType: 'json',
                         success: function (obj) {
@@ -760,7 +338,6 @@
             }
 
         });
-
     </script>
 </body>
 

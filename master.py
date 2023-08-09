@@ -23,6 +23,12 @@ DB = {}
 PORTS_USED = set()
 
 
+def get_public_ip():
+    response = requests.get("https://api64.ipify.org?format=json")
+    data = response.json()
+    ip_address = data["ip"]
+    return ip_address
+
 def get_free_port():
     """Find and return an available free port."""
     global PORTS_USED
@@ -75,7 +81,7 @@ def port_watcher(DB):
 def check_server_availability(port):
     """Check if the target_app server is responsive."""
     try:
-        response = requests.get(f"http://localhost:{port}")
+        response = requests.get(f"http://localhost:{port}/ping")
         return response.status_code == 200
     except requests.exceptions.RequestException:
         return False
@@ -128,67 +134,6 @@ def get_source_code_hash(file_path):
         print('Unable to calculate hash of source code from file %s error: %s' % (file_path, e))
 
     return None
-
-
-# async def websocket_handler(websocket, path):
-#     global CLIENT_WEBSOCKET
-#     global LIVE_SNAPSHOTS
-#     global REQUESTID_TO_LINENO_MAP
-#     global FRONTEND_TRACEPOINTS
-#     assert path=="/master"
-#     CLIENT_WEBSOCKET = websocket
-#     try:
-#         async for message in websocket:
-#             message_json = json.loads(message)
-#             if(message_json["name"] in ["TracePointSnapshotEvent"] ):
-#                 live_message = {}
-#                 live_message["timestamp"] = get_time()
-#                 live_message["fileName"] = message_json["fileName"][:message_json["fileName"].index("?")]
-#                 live_message["methodName"] = message_json["methodName"]
-#                 live_message["lineNo"] = message_json["lineNo"]
-#                 live_message["traceId"] = message_json["traceId"]
-#                 live_message["spanId"] = message_json["spanId"]
-#                 if len(message_json["frames"])>0 and "variables" in message_json["frames"][0]:
-#                     live_message["variables"] = message_json["frames"][0]["variables"]
-#                 LIVE_SNAPSHOTS.append(json.dumps(live_message))
-#             if(message_json["name"] == "PutTracePointResponse"):
-#                 if(message_json["erroneous"]==False):
-#                     lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
-#                     FRONTEND_TRACEPOINTS[lineno-1] = True
-#                     del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
-#             if(message_json["name"] == "RemoveTracePointResponse"):
-#                 if(message_json["erroneous"]==False):
-#                     lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
-#                     FRONTEND_TRACEPOINTS[lineno-1] = False
-#                     del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
-#             # print(message)
-#     except websockets.exceptions.ConnectionClosedOK:
-#         pass  # Connection closed gracefully
-#     except Exception as e:
-#         print(f"WebSocket error: {e}")
-#     finally:
-#         CLIENT_WEBSOCKET = None  # Reset the global variable on connection close
-#         # You can add a reconnection logic here
-#         retry_interval = 5  # Adjust the interval as needed
-#         while True:
-#             try:
-#                 print("Trying to reconnect...")
-#                 async with websockets.connect('ws://localhost:8094/app') as new_websocket:
-#                     await websocket_handler(new_websocket, path)
-#             except Exception as e:
-#                 print(f"Reconnection failed. Retrying in {retry_interval} seconds.")
-#                 time.sleep(retry_interval)
-
-
-# # start a websocker server on a thread
-# def run_websocket_server():
-#     loop = asyncio.new_event_loop()
-#     asyncio.set_event_loop(loop)
-#     start_server = websockets.serve(websocket_handler, 'localhost', 8094)
-#     print("running7")
-#     loop.run_until_complete(start_server)
-#     loop.run_forever()
-
 
 # start a WebSocket server on a thread
 def run_websocket_server():
@@ -360,7 +305,7 @@ def index():
             print(f"length index = {len(DB.items())}")
         # Check if the target_app server is responsive
         if check_server_availability(port):
-            return render_template("tic-tac-toe.html", port=port)
+            return render_template("tic-tac-toe.html", port=port, server_url=f"http://{get_public_ip()}")
         else:
             # If the server is not responsive, redirect to index.html
             print("error")
@@ -369,16 +314,12 @@ def index():
         # If the request is a GET, we render the HTML form asking for the email.
         return render_template("index.html")
     
-# @app.route('/app')
-# def websocket_client():
-#     return render_template('./templates/websocket_client.html')
-
 if __name__ == "__main__":
     # Start the port watcher as a separate thread
     watcher_thread = threading.Thread(target=port_watcher, args=(DB,), daemon=True)
     watcher_thread.start()
-    websocket_thread = threading.Thread(target=run_websocket_server, daemon=True)
-    websocket_thread.start()
+    # websocket_thread = threading.Thread(target=run_websocket_server, daemon=True)
+    # websocket_thread.start()
     try:
         app.run(debug=True, port=5001, host="0.0.0.0")
     except KeyboardInterrupt:
