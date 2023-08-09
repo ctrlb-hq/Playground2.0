@@ -2,9 +2,12 @@ require('dotenv').config();
 
 const heimdall = require('@ctrlb/heimdall');
 
-// heimdall.start({ 
-
-//  });
+heimdall.start({ 
+  apiKey:"bla",
+  brokerPort:"8094",
+  brokerHost:"ws://localhost",
+  applicationName: process.argv[2] || 8000
+ });
 
 const WebSocket = require('ws');
 var express = require('express');
