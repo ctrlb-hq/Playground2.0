@@ -51,6 +51,10 @@ DB = {}
 #       "pid": pid,
 #       "timestamp": timestamp,
 #       "websocket": websocket,
+#       "tracepoint_map": {
+#             line_no: tracePointId,
+#             # More line_no to tracePointId mappings for this port
+#         }
 #       }
 #   }
 PORTS_TO_EMAIL_MAP = {}
@@ -69,10 +73,13 @@ def delete_entry(email):
     collection.delete_one({"email": email})
 
 def get_email_for_port(port):
+    global PORTS_TO_EMAIL_MAP
     email = ""
     print("map here", PORTS_TO_EMAIL_MAP)
+    port = int(port)
     if port in PORTS_TO_EMAIL_MAP:
         email = PORTS_TO_EMAIL_MAP[port]
+        print("get email",email)
     else:
         print(f"Something wrong! port: {port} not recognized")
     return email
@@ -111,7 +118,7 @@ def cleanup_stale_ports():
     now = time.time()
     for email, info in list(DB.items()):
         port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
-        if now - timestamp > 60:  # Check if the port was used for more than an hour
+        if now - timestamp > 600:  # Check if the port was used for more than an hour
             print(f"Cleaning up port {port} for email {email}")
             try:
                 os.kill(pid, 9)  # Send SIGKILL signal to terminate the process
@@ -220,6 +227,8 @@ async def sendPutTracepoint(line_no, port):
     if email not in DB or DB[email]["websocket"] is None:
         print(f"Unrecognized email: {email}")
         return
+    if "tracepoint_map" not in DB[email]:
+        DB[email]["tracepoint_map"] = {}
     client_websocket = DB[email]["websocket"]
     tracePointId = generate_random_string(7)
     requestId = generate_random_string(7)
@@ -236,11 +245,23 @@ async def sendPutTracepoint(line_no, port):
     }
     await _serialize_and_send(client_websocket, message_json)
     LINENO_TO_TRACEPOINTID_MAP[line_no] = tracePointId
+    DB[email]["tracepoint_map"][line_no] = tracePointId
     REQUESTID_TO_LINENO_MAP[requestId] = line_no
 
-async def sendRemoveTracepoint(line_no):
-    global REQUESTID_TO_LINENO_MAP
-    tracePointId = LINENO_TO_TRACEPOINTID_MAP[line_no]
+async def sendRemoveTracepoint(email, line_no):
+    print("DB", DB)
+    if email not in DB:
+        print(f"Unrecognized email: {email}")
+        return
+    # Check if the 'tracepoint_map' key exists for the given email in the DB
+    if "tracepoint_map" not in DB[email]:
+        print(f"No 'tracepoint_map' found for email: {email}")
+        return
+    
+    if line_no not in DB[email]["tracepoint_map"]:
+        print(f"Tracepoint not found for line number {line_no} and email {email}")
+        return
+    tracePointId = DB[email]["tracepoint_map"][line_no]
     requestId = generate_random_string(7)
     message_json = {
         "name":"RemoveTracePointRequest",
@@ -253,7 +274,8 @@ async def sendRemoveTracepoint(line_no):
         "enableTracing":True,
         "conditionExpression":None,
     }
-    await _serialize_and_send(message_json)
+    await _serialize_and_send(DB[email]["websocket"], message_json)
+    del DB[email]["tracepoint_map"][line_no]
     REQUESTID_TO_LINENO_MAP[requestId] = line_no
 
 
@@ -268,18 +290,24 @@ def receive_request():
     response_data = {'message': 'Request received successfully!'}
     return jsonify(response_data), 200
 
-# @app.route('/removetracepoint', methods=['POST'])
-# def remove_tracepoint():
-#     data = request.get_json()
-#     port = data.get('port')
-#     lineNumber = data.get('lineNumber')
-#     print(f"Received request to remove tracepoint from port {port} for line number {lineNumber}")
+@app.route('/removetracepoint', methods=['POST'])
+def remove_tracepoint():
+    data = request.get_json()
+    port = data.get('port')
+    lineNumber = data.get('lineNumber')
+    print(f"Received request to remove tracepoint from port {port} for line number {lineNumber}")
 
-#     # Call the function to send the RemoveTracepoint request
-#     asyncio.run(sendRemoveTracepoint(port, lineNumber))
-
-#     response_data = {'message': 'Request received successfully!'}
-#     return jsonify(response_data), 200
+     # Get the email associated with the port
+    email = get_email_for_port(port)
+    print("email1",email,lineNumber)
+    if email is not None:
+        # Call the function to send the RemoveTracepoint request
+        asyncio.run(sendRemoveTracepoint(email, lineNumber))
+        response_data = {'message': f'RemoveTracepoint request sent for line number {lineNumber}'}
+        return jsonify(response_data), 200
+    else:
+        response_data = {'message': 'Invalid port'}
+        return jsonify(response_data), 400
 
 
 @app.route("/", methods=["GET", "POST"])

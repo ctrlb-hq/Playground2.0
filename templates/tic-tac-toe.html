@@ -168,6 +168,7 @@
                 var gutterIndex = gutters.indexOf("tracepoint"); // Find the index of the "tracepoint" gutter
                 // sendRemoveTracepointRequest(port, lineNumber);
                 cm.setGutterMarker(lineNumber, "tracepoint", null); // Remove the marker from the specified line number in the gutter
+                sendRemoveTracepointRequest(port, lineNumber);
             }
 
             // Event listener to handle clicking on the line number gutter
