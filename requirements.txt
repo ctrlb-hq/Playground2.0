@@ -3,3 +3,4 @@ requests
 Flask-cors
 websockets
 pytz
+flask_pymongo

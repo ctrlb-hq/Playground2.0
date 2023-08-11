@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, jsonify
 from flask_cors import CORS
+from flask_pymongo import PyMongo, MongoClient
+from pymongo.errors import OperationFailure
+from urllib.parse import quote_plus
 import subprocess
 import time
 import os
@@ -16,6 +19,29 @@ import string
 app = Flask(__name__)
 CORS(app)
 
+# Replace <YOUR_USERNAME> and <YOUR_PASSWORD> with your MongoDB Atlas credentials
+username = "soumya"
+password = "OQCgHTKKCTloVys4"
+cluster_name = "cluster0.yojnkbb.mongodb.net"
+dbname = "test"
+# Escape the username and password using urllib.parse.quote_plus
+escaped_username = quote_plus(username)
+escaped_password = quote_plus(password)
+mongo_uri = f"mongodb+srv://{username}:{password}@{cluster_name}/{dbname}?retryWrites=true&w=majority"
+
+app.config["MONGO_URI"] = mongo_uri
+try:
+    # Connect to MongoDB using the configured URI
+    mongo_client = MongoClient(mongo_uri)
+    db = mongo_client["DB"]  # Get the default database
+    collection = db["CtrlB-Playground"]  # Use the "entries" collection for storing entries
+    print("Connected to MongoDB Atlas successfully!")
+except OperationFailure as e:
+    print("Failed to connect to MongoDB Atlas:")
+    print(f"Error message: {e.details['errmsg']}")
+    print(f"Error code: {e.details['code']}")
+    print(f"Error code name: {e.details['codeName']}")
+
 # Flag to signal the port_watcher thread to stop
 stop_port_watcher = False
 DB = {}
@@ -30,8 +56,21 @@ DB = {}
 PORTS_TO_EMAIL_MAP = {}
 # {port:email}
 
+def add_entry(email):
+    entry = {
+        "email": email,
+    }
+    collection.insert_one(entry)
+
+def get_entry(email):
+    return collection.find_one({"email": email})
+
+def delete_entry(email):
+    collection.delete_one({"email": email})
+
 def get_email_for_port(port):
     email = ""
+    print("map here", PORTS_TO_EMAIL_MAP)
     if port in PORTS_TO_EMAIL_MAP:
         email = PORTS_TO_EMAIL_MAP[port]
     else:
@@ -42,6 +81,8 @@ def get_public_ip():
     response = requests.get("https://api64.ipify.org?format=json")
     data = response.json()
     ip_address = data["ip"]
+    # return "ec2-43-204-221-58.ap-south-1.compute.amazonaws.com"
+    # return "localhost"
     return ip_address
 
 def get_free_port(email):
@@ -70,7 +111,7 @@ def cleanup_stale_ports():
     now = time.time()
     for email, info in list(DB.items()):
         port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
-        if now - timestamp > 600:  # Check if the port was used for more than an hour
+        if now - timestamp > 60:  # Check if the port was used for more than an hour
             print(f"Cleaning up port {port} for email {email}")
             try:
                 os.kill(pid, 9)  # Send SIGKILL signal to terminate the process
@@ -247,6 +288,7 @@ def index():
     if request.method == "POST":
         # Handle the submitted email address
         email = request.form.get("email")
+        print("here is DB",DB)
         if email not in DB:
             # Spin a new server here
             free_port = get_free_port(email)
@@ -258,6 +300,7 @@ def index():
             if pid:
                 DB[email]["pid"] = pid
                 DB[email]["timestamp"] = timestamp
+                add_entry(email)
             else:
                 del DB[email]
                 return "No free ports available at the moment. Please try again later.", 500
