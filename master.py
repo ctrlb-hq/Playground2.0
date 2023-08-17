@@ -58,12 +58,13 @@ DB = {}
 #       "websocket": websocket,
 #       "tracepoint_map": {
 #             line_no: tracePointId,
-#             # More line_no to tracePointId mappings for this port
 #         }
 #       }
 #   }
 PORTS_TO_EMAIL_MAP = {}
 # {port:email}
+# Outside of any function, at the beginning of your script
+tracepoint_events_by_port = {}  # {port: [live_message1, live_message2, ...]}
 
 def add_entry(email):
     entry = {
@@ -170,6 +171,7 @@ def generate_random_string(length):
     random_string = ''.join(secrets.choice(characters) for _ in range(length))
     return random_string
 
+
 async def websocket_handler(websocket, path):
     global DB
     global REQUESTID_TO_LINENO_MAP
@@ -191,6 +193,7 @@ async def websocket_handler(websocket, path):
 
 
         if(message_json["name"] in ["TracePointSnapshotEvent"] ):
+            
             live_message = {}
             live_message["timestamp"] = get_time()
             live_message["fileName"] = message_json["fileName"][:message_json["fileName"].index("?")]
@@ -208,6 +211,21 @@ async def websocket_handler(websocket, path):
         #     if(message_json["erroneous"]==False):
         #         lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
         #         del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
+            # Send the live_message to the connected client
+            print("this is port",port)
+            def send_live_message_to_server_js(port, live_message):
+                url = f'http://{get_public_ip()}:{port}/addTracepointEvent'
+                # print(url)
+                headers = {'Content-Type': 'application/json'}
+                data = {'port': port, 'live_message': live_message}
+                response = requests.post(url, json=data, headers=headers)
+                if response.status_code == 200:
+                    print("Live message sent successfully.")
+                else:
+                    print("Failed to send live message.")
+            # Call the function to send the live_message to the corresponding server.js
+            send_live_message_to_server_js(port, live_message)
+
 
 # start a WebSocket server on a thread
 def run_websocket_server():

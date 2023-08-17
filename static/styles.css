@@ -7,6 +7,17 @@ body {
 }
 
 
+.dialog-box {
+    display: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 400px;
+    max-height: 300px;
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds max-height */
+    padding: 10px;
+    font-size: 12px; /* Adjust the font size as needed */
+}
 
 
 
