@@ -38,8 +38,8 @@ app.config["MONGO_URI"] = mongo_uri
 try:
     # Connect to MongoDB using the configured URI
     mongo_client = MongoClient(mongo_uri)
-    db = mongo_client["DB"]  # Get the default database
-    collection = db["CtrlB-Playground"]  # Use the "entries" collection for storing entries
+    db = mongo_client["CtrlB-Playground"]  # Get the default database
+    collection = db[dbname]  # Use the "entries" collection for storing entries
     print(f"Connected to MongoDB Atlas successfully at cluster: {cluster_name}/{dbname}")
 except OperationFailure as e:
     print("Failed to connect to MongoDB Atlas:")
@@ -95,7 +95,7 @@ def get_public_ip():
     data = response.json()
     ip_address = data["ip"]
     # return "ec2-43-204-221-58.ap-south-1.compute.amazonaws.com"
-    # return "localhost"
+    return "localhost"
     return ip_address
 
 def get_free_port(email):
@@ -115,16 +115,30 @@ def start_new_target_app(free_port, email):
     timestamp = time.time()
     command = ["node", "Server/server.js", str(free_port)]
     process = subprocess.Popen(command, cwd="target_app")
-    print("Sleeping for 2 seconds...")
-    time.sleep(2)
+    print("Sleeping for 4 seconds...")
+    time.sleep(4)
     return process.pid, timestamp
 
-def cleanup_stale_ports():
-    """Clean up ports for entries older than an hour in the DB."""
+"""
+Cleans the state for this email if the time has expired.
+If force is set as True, forcefully kill without thinking about timestamp.
+
+* kills process
+* cleans DB
+* cleans PORTS_TO_EMAIL_MAP
+"""
+def clean_for_email(email, force=False):
+    global DB
+    global PORTS_TO_EMAIL_MAP
     now = time.time()
-    for email, info in list(DB.items()):
+    info = None
+    if email in DB:
+        info = DB[email]
+    else:
+        return
+    try:
         port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
-        if now - timestamp > 600:  # Check if the port was used for more than an hour
+        if force or (now - timestamp > 600):  # Check if the port was used for more than an hour
             print(f"Cleaning up port {port} for email {email}")
             try:
                 os.kill(pid, 9)  # Send SIGKILL signal to terminate the process
@@ -133,6 +147,16 @@ def cleanup_stale_ports():
                 print(f"Failed to kill process with PID {pid}: {e}")
             del DB[email]  # Remove the entry from the dictionary
             del PORTS_TO_EMAIL_MAP[port] # Free up the port in the PORTS_TO_EMAIL_MAP
+    except:
+        pass
+
+
+def cleanup_stale_ports():
+    """Clean up ports for entries older than an hour in the DB."""
+    print('here!!')
+    print(DB)
+    for email, _ in list(DB.items()):
+        clean_for_email(email)
 
 def port_watcher(DB):
     """Periodically check and clean up stale ports."""

@@ -14,7 +14,6 @@ function currentTurn(board){
 		if(element === 'X') x++
 		if(element === 'O') o++
 	});
-	console.log("HERE!")
 	return x === o ? 'X' : 'O'
 
 }
