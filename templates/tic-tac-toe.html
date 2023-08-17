@@ -28,7 +28,7 @@
 <body>
     <div class="left">
         <div class="icon">
-            <img src={{ url_for('static', filename='img/coding.png') }} alt="icon" class="img">
+            <img src={{ url_for('static', filename='img/coding.png' ) }} alt="icon" class="img">
             <h1 class="header">Code</h1>
             <div class="button-container">
                 <button id="openDialogButton" class="dbox">View Snapshot</button>
@@ -109,7 +109,19 @@
         $(document).ready(function () {
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
+            // var socket = new WebSocket('ws://localhost:8094/ws/app');  // Change the URL to match your WebSocket server URL
 
+            // socket.onmessage = function (event) {
+            //     var liveMessage = JSON.parse(event.data);
+
+            //     // Update the view snapshots section with the received live_message
+            //     var dialogBox = document.querySelector('.dialog-box');
+            //     var snapshotText = JSON.stringify(liveMessage, null, 2);  // Beautify JSON for display
+            //     dialogBox.innerText = snapshotText;
+
+            //     // Show the dialog box when a WebSocket message is received
+            //     dialogBox.style.display = "block";
+            // };
 
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
@@ -175,6 +187,7 @@
             function gutterClick(cm, lineNumber, gutterID) {
                 console.log("line number", lineNumber, gutterID);
                 if (gutterID === "CodeMirror-linenumbers") {
+
                     var marker = cm.lineInfo(lineNumber).gutterMarkers && cm.lineInfo(lineNumber).gutterMarkers.tracepoint;
                     if (marker) {
                         removeTracepointMarker(lineNumber);
@@ -218,22 +231,78 @@
             fetchApiCode();
 
 
+
+
+
+            function fetchAndDisplayTracepointEvents(port) {
+
+                $.ajax({
+
+                    type: "GET",
+                    url: `{{ server_url }}:${port}/getTracepointEvents/${port}`,
+                    success: function (response) {
+                        console.log("port is here", port, response);
+                        var dialogBox = document.querySelector('.dialog-box');
+                        var event = response.events;
+                        console.log("here is the event",event,event.methodName);
+                        // var formattedEvent = '';
+
+                        // formattedEvent += 'Timestamp: ' + event.timestamp + '\n';
+                        // formattedEvent += 'File Name: ' + event.fileName + '\n';
+                        // formattedEvent += 'Method Name: ' + event.methodName + '\n';
+                        // formattedEvent += 'Line Number: ' + event.lineNo + '\n';
+
+                        // if (event.variables && event.variables.board) {
+                        //     formattedEvent += 'Board: ' + JSON.stringify(event.variables.board['@value']) + '\n';
+                        // }
+
+                        // formattedEvent += '\n';
+                        var snapshotText = JSON.stringify(event, null, 2);
+                        dialogBox.innerText = snapshotText;
+                        dialogBox.style.display = "block";
+                    },
+                    error: function (xhr, status, err) {
+                        console.error(status, err.toString());
+                    }
+                });
+            }
+            var intervalId = null; // Declare intervalId globally
+            function updateDialogBoxContent() {
+                var dialogBox = document.querySelector('.dialog-box');
+                if (dialogBoxVisible) {
+                    fetchAndDisplayTracepointEvents(port);
+                }
+            }
+
+            // Function to start the interval
+            function startInterval() {
+                intervalId = setInterval(updateDialogBoxContent, 2000); // 5000 milliseconds = 5 seconds
+            }
+            // Function to stop the interval
+            function stopInterval() {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
             var dialogBoxVisible = false;
 
             $('#openDialogButton').on('click', function () {
+                // var dialogBox = $('.dialog-box');
                 if (dialogBoxVisible) {
                     $('.dialog-box').hide();
+                    stopInterval(); // Stop the interval when closing the dialog
                 } else {
                     $('.dialog-box').show();
+                    startInterval(); // Start the interval when opening the dialog
+                    fetchAndDisplayTracepointEvents(port);
                 }
                 dialogBoxVisible = !dialogBoxVisible;
+                // fetchAndDisplayTracepointEvents(port);
             });
 
             $('#closeDialogButton').on('click', function (event) {
                 // Prevent the default behavior of the button, so it doesn't close the dialog
                 event.preventDefault();
             });
-
 
             var gameBoard = ['', '', '', '', '', '', '', '', ''];
             var gameCounter = 0;

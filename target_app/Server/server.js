@@ -2,12 +2,12 @@ require('dotenv').config();
 
 const heimdall = require('@ctrlb/heimdall');
 
-heimdall.start({ 
-  apiKey:"bla",
-  brokerPort:"8094",
-  brokerHost:"ws://localhost",
+heimdall.start({
+  apiKey: "bla",
+  brokerPort: "8094",
+  brokerHost: "ws://localhost",
   applicationName: process.argv[2] || 8000
- });
+});
 
 const WebSocket = require('ws');
 var express = require('express');
@@ -23,8 +23,8 @@ app.use(cors()); // Enable CORS for all routes
 
 app.set('port', (process.argv[2] || 8000));
 
-var server = app.listen(app.get('port'), function() {
-  console.log('listening on port ',app.get('port'));
+var server = app.listen(app.get('port'), function () {
+  console.log('listening on port ', app.get('port'));
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -53,6 +53,43 @@ app.get('/api/js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
     res.send(data);
   });
+});
+
+// Initialize an array to store tracepoint events
+const tracepointEventsByPort = {};
+// const liveMessagesByPort = {}; // New object to store live messages
+
+// Endpoint to add a tracepoint event
+app.post('/addTracepointEvent', (req, res) => {
+
+  const data = req.body;
+  const port = data.port; // Extract port information from the data
+  const liveMessage = data.live_message; // Extract live_message from the data
+  // console.log(liveMessage, port)
+  // Create an array for the port if not exists and push the live_message
+  if (!tracepointEventsByPort[port]) {
+    tracepointEventsByPort[port] = [];
+  }
+  tracepointEventsByPort[port].push(liveMessage);
+  // Store the liveMessage in the liveMessagesByPort object
+  // liveMessagesByPort[port] = liveMessage;
+  // console.log(tracepointEventsByPort[port]);
+  try {
+    res.status(200).json({ message: 'Live message added successfully.' });
+    // console.log("yayy");
+  } catch (error) {
+    console.error('Error sending response:', error);
+  }
+});
+
+// Endpoint to get tracepoint events for a specific port
+app.get('/getTracepointEvents/:port', (req, res) => {
+  const port = req.params.port;
+  const events = tracepointEventsByPort[port] ;
+  // const liveMessage = liveMessagesByPort[port];
+  // console.log('Request received for port1:', port);
+  // console.log('Events:', events);
+  res.status(200).json({ events: events});
 });
 
 app.get('/ping', (req, res) => {
