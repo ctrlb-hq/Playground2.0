@@ -363,27 +363,23 @@ def index():
     if request.method == "POST":
         # Handle the submitted email address
         email = request.form.get("email")
-        print("here is DB",DB)
-        if email not in DB:
-            # Spin a new server here
-            free_port = get_free_port(email)
-            DB[email] = {
-                "port": free_port,
-            }
-            if free_port:
-                pid, timestamp = start_new_target_app(free_port, email)
-            if pid:
-                DB[email]["pid"] = pid
-                DB[email]["timestamp"] = timestamp
-                add_entry(email)
-            else:
-                del DB[email]
-                return "No free ports available at the moment. Please try again later.", 500
-            print(f"New target_app started on port {free_port} with process id {pid}")
+        if email in DB:
+            clean_for_email(email, force=True)
+        # Spin a new server here
+        free_port = get_free_port(email)
+        DB[email] = {
+            "port": free_port,
+        }
+        if free_port:
+            pid, timestamp = start_new_target_app(free_port, email)
+        if pid:
+            DB[email]["pid"] = pid
+            DB[email]["timestamp"] = timestamp
+            add_entry(email)
         else:
-            # If the email already exists, update the "timestamp"
-            DB[email]["timestamp"] = time.time()
-            print(f"Timestamp updated for email {email}")
+            del DB[email]
+            return "No free ports available at the moment. Please try again later.", 500
+        print(f"New target_app started on port {free_port} with process id {pid}")
         port = DB[email]["port"]
         if not DB:  # Check if DB is empty
             print("DB is empty index")
