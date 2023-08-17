@@ -15,15 +15,20 @@ from datetime import datetime
 import pytz
 import secrets
 import string
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from the .env file
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
 # Replace <YOUR_USERNAME> and <YOUR_PASSWORD> with your MongoDB Atlas credentials
-username = "soumya"
-password = "OQCgHTKKCTloVys4"
-cluster_name = "cluster0.yojnkbb.mongodb.net"
-dbname = "test"
+username = os.getenv("DB_USERNAME")
+password = os.getenv("DB_PASSWORD")
+cluster_name = os.getenv("DB_CLUSTER")
+dbname = os.getenv("DB_NAME")
 # Escape the username and password using urllib.parse.quote_plus
 escaped_username = quote_plus(username)
 escaped_password = quote_plus(password)
@@ -35,7 +40,7 @@ try:
     mongo_client = MongoClient(mongo_uri)
     db = mongo_client["DB"]  # Get the default database
     collection = db["CtrlB-Playground"]  # Use the "entries" collection for storing entries
-    print("Connected to MongoDB Atlas successfully!")
+    print(f"Connected to MongoDB Atlas successfully at cluster: {cluster_name}/{dbname}")
 except OperationFailure as e:
     print("Failed to connect to MongoDB Atlas:")
     print(f"Error message: {e.details['errmsg']}")
