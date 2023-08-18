@@ -17,6 +17,7 @@ import secrets
 import string
 import os
 from dotenv import load_dotenv
+from database import Database
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -49,24 +50,12 @@ except OperationFailure as e:
 
 # Flag to signal the port_watcher thread to stop
 stop_port_watcher = False
-DB = {}
-# DB = {
-#   email:   {
-#       "port": port,
-#       "pid": pid,
-#       "timestamp": timestamp,
-#       "websocket": websocket,
-#       "tracepoint_map": {
-#             line_no: tracePointId,
-#         }
-#       }
-#   }
-PORTS_TO_EMAIL_MAP = {}
-# {port:email}
+database = Database()
+
 # Outside of any function, at the beginning of your script
 tracepoint_events_by_port = {}  # {port: [live_message1, live_message2, ...]}
 
-def add_entry(email):
+def add_email_in_persistent_db(email):
     entry = {
         "email": email,
     }
@@ -78,18 +67,6 @@ def get_entry(email):
 def delete_entry(email):
     collection.delete_one({"email": email})
 
-def get_email_for_port(port):
-    global PORTS_TO_EMAIL_MAP
-    email = ""
-    print("map here", PORTS_TO_EMAIL_MAP)
-    port = int(port)
-    if port in PORTS_TO_EMAIL_MAP:
-        email = PORTS_TO_EMAIL_MAP[port]
-        print("get email",email)
-    else:
-        print(f"Something wrong! port: {port} not recognized")
-    return email
-    
 def get_public_ip():
     response = requests.get("https://api64.ipify.org?format=json")
     data = response.json()
@@ -100,10 +77,9 @@ def get_public_ip():
 
 def get_free_port(email):
     """Find and return an available free port."""
-    global PORTS_TO_EMAIL_MAP
+    global database
     for port in range(9000, 10000):
-        if port not in PORTS_TO_EMAIL_MAP:
-            PORTS_TO_EMAIL_MAP[port] = email
+        if not database.check_port_in_use(port):
             return port
     return None
 
@@ -128,13 +104,9 @@ If force is set as True, forcefully kill without thinking about timestamp.
 * cleans PORTS_TO_EMAIL_MAP
 """
 def clean_for_email(email, force=False):
-    global DB
-    global PORTS_TO_EMAIL_MAP
     now = time.time()
-    info = None
-    if email in DB:
-        info = DB[email]
-    else:
+    info = database.get_data_for_email(email)
+    if not info:
         return
     try:
         port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
@@ -145,33 +117,29 @@ def clean_for_email(email, force=False):
                 print(f"Process with PID {pid} killed")
             except Exception as e:
                 print(f"Failed to kill process with PID {pid}: {e}")
-            del DB[email]  # Remove the entry from the dictionary
-            del PORTS_TO_EMAIL_MAP[port] # Free up the port in the PORTS_TO_EMAIL_MAP
+            database.delete_email(email)
     except:
         pass
 
 
 def cleanup_stale_ports():
     """Clean up ports for entries older than an hour in the DB."""
-    print('here!!')
-    print(DB)
-    for email, _ in list(DB.items()):
+    for email in database.get_all_emails():
         clean_for_email(email)
 
-def port_watcher(DB):
+def port_watcher():
     """Periodically check and clean up stale ports."""
+    global database
     global stop_port_watcher
     while not stop_port_watcher:
-        print("Running port watcher...")
-        if not DB:  # Check if DB is empty
-            print("DB is empty")
-        else:
-            print(f"length = {len(DB.items())}")
+        print("Triggering port watcher...")
         cleanup_stale_ports()
         time.sleep(60)  # Check every 60 seconds
 
 def check_server_availability(port):
     """Check if the target_app server is responsive."""
+    if port is None:
+        return False
     try:
         response = requests.get(f"http://localhost:{port}/ping")
         return response.status_code == 200
@@ -180,9 +148,6 @@ def check_server_availability(port):
 
 
 CODE_TO_DEBUG = "https://api.github.com/repos/abc/aaa/contents/Server/Routes/api.js"
-# LINENO_TO_TRACEPOINTID_MAP = {}
-# REQUESTID_TO_LINENO_MAP = {}
-
 
 def get_time():
     current_time = datetime.now(pytz.utc)
@@ -197,8 +162,6 @@ def generate_random_string(length):
 
 
 async def websocket_handler(websocket, path):
-    global DB
-    global REQUESTID_TO_LINENO_MAP
     assert path == "/ws/app"
     async for message in websocket:
         message_json = json.loads(message)
@@ -207,14 +170,11 @@ async def websocket_handler(websocket, path):
             # When the agent starts it sends this request
             # So we can save the websocket for this port and email
             port = int(message_json["applicationFilter"]["name"])
-            email = get_email_for_port(port)
-            # TODO MUTEX!!!!
-            if email in DB:
-                DB[email]["websocket"] = websocket
-            else:
+            email = database.get_email_for_port(port)
+            if not email:
+                print(f"Something wrong! email not found for port: {port}")
+            if not database.set_websocket_for_email(email, websocket):
                 print(f"Something wrong! email: {email} for port: {port} not recognized")
-
-
 
         if(message_json["name"] in ["TracePointSnapshotEvent"] ):
             
@@ -269,15 +229,14 @@ async def _serialize_and_send(client_websocket, message_json):
     await client_websocket.send(message_serialized)
 
 async def sendPutTracepoint(line_no, port):
-    # global LINENO_TO_TRACEPOINTID_MAP
-    # global REQUESTID_TO_LINENO_MAP
-    email = get_email_for_port(port)
-    if email not in DB or DB[email]["websocket"] is None:
+    email = database.get_email_for_port(port)
+    if not email:
+        print(f"Something wrong! email not found for port: {port}")
+
+    client_websocket = database.get_websocket_for_email(email)
+    if not client_websocket:
         print(f"Unrecognized email: {email}")
         return
-    if "tracepoint_map" not in DB[email]:
-        DB[email]["tracepoint_map"] = {}
-    client_websocket = DB[email]["websocket"]
     tracePointId = generate_random_string(7)
     requestId = generate_random_string(7)
     message_json = {
@@ -292,24 +251,19 @@ async def sendPutTracepoint(line_no, port):
         "conditionExpression":None,
     }
     await _serialize_and_send(client_websocket, message_json)
-    # LINENO_TO_TRACEPOINTID_MAP[line_no] = tracePointId
-    DB[email]["tracepoint_map"][line_no] = tracePointId
-    # REQUESTID_TO_LINENO_MAP[requestId] = line_no
+    database.update_tracepoint_map(email, line_no, tracePointId)
 
 async def sendRemoveTracepoint(email, line_no):
-    print("DB", DB)
-    if email not in DB:
+    client_websocket = database.get_websocket_for_email(email)
+    if not client_websocket:
         print(f"Unrecognized email: {email}")
         return
-    # Check if the 'tracepoint_map' key exists for the given email in the DB
-    if "tracepoint_map" not in DB[email]:
-        print(f"No 'tracepoint_map' found for email: {email}")
-        return
-    
-    if line_no not in DB[email]["tracepoint_map"]:
+
+    tracePointId = database.get_tracePointId_for_email_lineno(email, line_no)
+    if not tracePointId:
         print(f"Tracepoint not found for line number {line_no} and email {email}")
         return
-    tracePointId = DB[email]["tracepoint_map"][line_no]
+
     requestId = generate_random_string(7)
     message_json = {
         "name":"RemoveTracePointRequest",
@@ -322,9 +276,9 @@ async def sendRemoveTracepoint(email, line_no):
         "enableTracing":True,
         "conditionExpression":None,
     }
-    await _serialize_and_send(DB[email]["websocket"], message_json)
-    del DB[email]["tracepoint_map"][line_no]
-    REQUESTID_TO_LINENO_MAP[requestId] = line_no
+    await _serialize_and_send(client_websocket, message_json)
+    database.delete_lineno_from_tracepointid_map_for_email(email, line_no)
+    # REQUESTID_TO_LINENO_MAP[requestId] = line_no
 
 
 @app.route('/tracepoint', methods=['POST'])
@@ -346,8 +300,7 @@ def remove_tracepoint():
     print(f"Received request to remove tracepoint from port {port} for line number {lineNumber}")
 
      # Get the email associated with the port
-    email = get_email_for_port(port)
-    print("email1",email,lineNumber)
+    email = database.get_email_for_port(port)
     if email is not None:
         # Call the function to send the RemoveTracepoint request
         asyncio.run(sendRemoveTracepoint(email, lineNumber))
@@ -360,38 +313,30 @@ def remove_tracepoint():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global DB
     if request.method == "POST":
         # Handle the submitted email address
         email = request.form.get("email")
-        if email in DB:
+        if database.check_email_in_db(email):
             clean_for_email(email, force=True)
         # Spin a new server here
         free_port = get_free_port(email)
-        DB[email] = {
-            "port": free_port,
-        }
+        database.set_port_for_email(email, free_port)
         if free_port:
             pid, timestamp = start_new_target_app(free_port, email)
         if pid:
-            DB[email]["pid"] = pid
-            DB[email]["timestamp"] = timestamp
-            add_entry(email)
+            database.set_pid_for_email(email, pid)
+            database.set_timestamp_for_email(email, timestamp)
+            add_email_in_persistent_db(email)
         else:
-            del DB[email]
+            database.delete_email(email)
             return "No free ports available at the moment. Please try again later.", 500
         print(f"New target_app started on port {free_port} with process id {pid}")
-        port = DB[email]["port"]
-        if not DB:  # Check if DB is empty
-            print("DB is empty index")
-        else:
-            print(f"length index = {len(DB.items())}")
+        port = database.get_port_for_email(email)
         # Check if the target_app server is responsive
         if check_server_availability(port):
             return render_template("tic-tac-toe.html", port=port, server_url=f"http://{get_public_ip()}")
         else:
             # If the server is not responsive, redirect to index.html
-            print("error")
             return f"Failed to get data from localhost:{port}", 500
     else:
         # If the request is a GET, we render the HTML form asking for the email.
@@ -399,7 +344,7 @@ def index():
     
 if __name__ == "__main__":
     # Start the port watcher as a separate thread
-    watcher_thread = threading.Thread(target=port_watcher, args=(DB,), daemon=True)
+    watcher_thread = threading.Thread(target=port_watcher, daemon=True)
     watcher_thread.start()
     websocket_thread = threading.Thread(target=run_websocket_server)
     websocket_thread.start()
