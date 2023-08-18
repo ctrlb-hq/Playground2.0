@@ -151,8 +151,8 @@ def check_server_availability(port):
 
 
 CODE_TO_DEBUG = "https://api.github.com/repos/abc/aaa/contents/Server/Routes/api.js"
-LINENO_TO_TRACEPOINTID_MAP = {}
-REQUESTID_TO_LINENO_MAP = {}
+# LINENO_TO_TRACEPOINTID_MAP = {}
+# REQUESTID_TO_LINENO_MAP = {}
 
 
 def get_time():
@@ -191,7 +191,8 @@ async def websocket_handler(websocket, path):
             
             live_message = {}
             live_message["timestamp"] = get_time()
-            live_message["fileName"] = message_json["fileName"][:message_json["fileName"].index("?")]
+            live_message["fileName"] = message_json["className"]
+            # live_message["className"]=message_json["className"]
             live_message["methodName"] = message_json["methodName"]
             live_message["lineNo"] = message_json["lineNo"]
             # live_message["traceId"] = message_json["traceId"]
@@ -239,8 +240,8 @@ async def _serialize_and_send(client_websocket, message_json):
     await client_websocket.send(message_serialized)
 
 async def sendPutTracepoint(line_no, port):
-    global LINENO_TO_TRACEPOINTID_MAP
-    global REQUESTID_TO_LINENO_MAP
+    # global LINENO_TO_TRACEPOINTID_MAP
+    # global REQUESTID_TO_LINENO_MAP
     email = get_email_for_port(port)
     if email not in DB or DB[email]["websocket"] is None:
         print(f"Unrecognized email: {email}")
@@ -262,9 +263,9 @@ async def sendPutTracepoint(line_no, port):
         "conditionExpression":None,
     }
     await _serialize_and_send(client_websocket, message_json)
-    LINENO_TO_TRACEPOINTID_MAP[line_no] = tracePointId
+    # LINENO_TO_TRACEPOINTID_MAP[line_no] = tracePointId
     DB[email]["tracepoint_map"][line_no] = tracePointId
-    REQUESTID_TO_LINENO_MAP[requestId] = line_no
+    # REQUESTID_TO_LINENO_MAP[requestId] = line_no
 
 async def sendRemoveTracepoint(email, line_no):
     print("DB", DB)

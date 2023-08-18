@@ -109,7 +109,7 @@
         $(document).ready(function () {
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
-            
+
 
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
@@ -196,7 +196,7 @@
                         editor = CodeMirror.fromTextArea(document.getElementById("myEditor"), {
                             lineNumbers: true,
                             mode: "javascript",
-                            theme: "monokai", // Set the theme as desired
+                            theme: "monokai", // Set the theme as desi#ee4c4c
                             lineWrapping: true, // Enable line wrapping
                             readOnly: true,
                             // gutters: ["CodeMirror-linenumbers", "tracepoint"] // Add the "tracepoint" gutter
@@ -226,26 +226,25 @@
                         console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
                         if (response && response.events) {
-                        var event = response.events;
-                        // console.log("here is the event",event,event[0].methodName);
-                        var formattedEvent = '';
-                        for(var i=0;i<event.length;i++){
+                            var event = response.events;
+                            console.log("here is the event", response, event);
+                            var formattedEvent = '';
+                            for (var i = 0; i < event.length; i++) {
 
-                            formattedEvent += 'Timestamp: ' + event[i].timestamp + '\n';
-                            formattedEvent += 'File Name: ' + event[i].fileName + '\n';
-                            formattedEvent += 'Method Name: ' + event[i].methodName + '\n';
-                            formattedEvent += 'Line Number: ' + (event[i].lineNo + 1) + '\n';
-                            
-                            if (event[i].variables && event[i].variables.board) {
-                                formattedEvent += 'Board: ' + JSON.stringify(event[i].variables.board['@value']) + '\n';
+                                formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #eafac2;">' + event[i].timestamp + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #eafac2;">' + event[i].fileName + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #eafac2;">' + event[i].methodName + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + (event[i].lineNo + 1) + '</span><br>';
+
+                                if (event[i].variables && event[i].variables.board) {
+                                    formattedEvent += '<span style="color: #f27979;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
+                                }
+
+                                formattedEvent += '<br>';
                             }
-                            
-                            formattedEvent += '\n\n';
-                            // var snapshotText = JSON.stringify(event, null, 2);
+                            dialogBox.innerHTML  = formattedEvent;
+                            dialogBox.style.display = "block";
                         }
-                        dialogBox.innerText = formattedEvent;
-                        dialogBox.style.display = "block";
-                    }
                     },
                     error: function (xhr, status, err) {
                         console.error(status, err.toString());
