@@ -91,8 +91,6 @@ def start_new_target_app(free_port, email):
     timestamp = time.time()
     command = ["node", "Server/server.js", str(free_port)]
     process = subprocess.Popen(command, cwd="target_app")
-    print("Sleeping for 4 seconds...")
-    time.sleep(4)
     return process.pid, timestamp
 
 """
@@ -322,15 +320,19 @@ def index():
             return "No free ports available at the moment. Please try again later.", 500
         print(f"New target_app started on port {free_port} with process id {pid}")
         port = database.get_port_for_email(email)
-        # Check if the target_app server is responsive
-        if check_server_availability(port):
-            return render_template("tic-tac-toe.html", port=port, server_url=f"http://{get_public_ip()}")
-        else:
-            # If the server is not responsive, redirect to index.html
-            return f"Failed to get data from localhost:{port}", 500
+        return render_template("sandbox_under_construction.html", email = email)
     else:
         # If the request is a GET, we render the HTML form asking for the email.
         return render_template("index.html")
+    
+@app.route("/sandbox", methods=["GET", "POST"])
+def sandbox():
+    email = request.args.get("email")
+    port = database.get_port_for_email(email)
+    if port and check_server_availability(port):
+        return render_template("tic-tac-toe.html", port=port, server_url=f"http://{get_public_ip()}")
+    else:
+        return f"Failed to get data from localhost:{port}", 500
     
 if __name__ == "__main__":
     # Start the port watcher as a separate thread

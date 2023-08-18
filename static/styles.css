@@ -393,3 +393,10 @@ h3 {
         transform: translateY(0);
     }
 }
+
+#loading-message {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+  }
