@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/monokai.min.css">
     <!-- Use CDN for language mode (e.g., JavaScript) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
 
 </head>
 
@@ -109,19 +109,7 @@
         $(document).ready(function () {
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
-            // var socket = new WebSocket('ws://localhost:8094/ws/app');  // Change the URL to match your WebSocket server URL
-
-            // socket.onmessage = function (event) {
-            //     var liveMessage = JSON.parse(event.data);
-
-            //     // Update the view snapshots section with the received live_message
-            //     var dialogBox = document.querySelector('.dialog-box');
-            //     var snapshotText = JSON.stringify(liveMessage, null, 2);  // Beautify JSON for display
-            //     dialogBox.innerText = snapshotText;
-
-            //     // Show the dialog box when a WebSocket message is received
-            //     dialogBox.style.display = "block";
-            // };
+            
 
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
@@ -230,36 +218,34 @@
             // Call the function to fetch and display the API code in CodeMirror format
             fetchApiCode();
 
-
-
-
-
             function fetchAndDisplayTracepointEvents(port) {
-
                 $.ajax({
-
                     type: "GET",
                     url: `{{ server_url }}:${port}/getTracepointEvents/${port}`,
                     success: function (response) {
                         console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
+                        if (response && response.events) {
                         var event = response.events;
-                        console.log("here is the event",event,event.methodName);
-                        // var formattedEvent = '';
+                        // console.log("here is the event",event,event[0].methodName);
+                        var formattedEvent = '';
+                        for(var i=0;i<event.length;i++){
 
-                        // formattedEvent += 'Timestamp: ' + event.timestamp + '\n';
-                        // formattedEvent += 'File Name: ' + event.fileName + '\n';
-                        // formattedEvent += 'Method Name: ' + event.methodName + '\n';
-                        // formattedEvent += 'Line Number: ' + event.lineNo + '\n';
-
-                        // if (event.variables && event.variables.board) {
-                        //     formattedEvent += 'Board: ' + JSON.stringify(event.variables.board['@value']) + '\n';
-                        // }
-
-                        // formattedEvent += '\n';
-                        var snapshotText = JSON.stringify(event, null, 2);
-                        dialogBox.innerText = snapshotText;
+                            formattedEvent += 'Timestamp: ' + event[i].timestamp + '\n';
+                            formattedEvent += 'File Name: ' + event[i].fileName + '\n';
+                            formattedEvent += 'Method Name: ' + event[i].methodName + '\n';
+                            formattedEvent += 'Line Number: ' + (event[i].lineNo + 1) + '\n';
+                            
+                            if (event[i].variables && event[i].variables.board) {
+                                formattedEvent += 'Board: ' + JSON.stringify(event[i].variables.board['@value']) + '\n';
+                            }
+                            
+                            formattedEvent += '\n\n';
+                            // var snapshotText = JSON.stringify(event, null, 2);
+                        }
+                        dialogBox.innerText = formattedEvent;
                         dialogBox.style.display = "block";
+                    }
                     },
                     error: function (xhr, status, err) {
                         console.error(status, err.toString());
