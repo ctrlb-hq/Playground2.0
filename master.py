@@ -177,7 +177,6 @@ async def websocket_handler(websocket, path):
                 print(f"Something wrong! email: {email} for port: {port} not recognized")
 
         if(message_json["name"] in ["TracePointSnapshotEvent"] ):
-            
             live_message = {}
             live_message["timestamp"] = get_time()
             live_message["fileName"] = message_json["className"]
@@ -188,14 +187,6 @@ async def websocket_handler(websocket, path):
             # live_message["spanId"] = message_json["spanId"]
             if len(message_json["frames"])>0 and "variables" in message_json["frames"][0]:
                 live_message["variables"] = message_json["frames"][0]["variables"]
-        # if(message_json["name"] == "PutTracePointResponse"):
-        #     if(message_json["erroneous"]==False):
-        #         lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
-        #         del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
-        # if(message_json["name"] == "RemoveTracePointResponse"):
-        #     if(message_json["erroneous"]==False):
-        #         lineno = REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
-        #         del REQUESTID_TO_LINENO_MAP[message_json["requestId"]]
             # Send the live_message to the connected client
             print("this is port",port)
             def send_live_message_to_server_js(port, live_message):
@@ -278,7 +269,6 @@ async def sendRemoveTracepoint(email, line_no):
     }
     await _serialize_and_send(client_websocket, message_json)
     database.delete_lineno_from_tracepointid_map_for_email(email, line_no)
-    # REQUESTID_TO_LINENO_MAP[requestId] = line_no
 
 
 @app.route('/tracepoint', methods=['POST'])
