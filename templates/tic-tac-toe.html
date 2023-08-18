@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/monokai.min.css">
     <!-- Use CDN for language mode (e.g., JavaScript) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
 
 </head>
 
@@ -109,19 +109,7 @@
         $(document).ready(function () {
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
-            // var socket = new WebSocket('ws://localhost:8094/ws/app');  // Change the URL to match your WebSocket server URL
 
-            // socket.onmessage = function (event) {
-            //     var liveMessage = JSON.parse(event.data);
-
-            //     // Update the view snapshots section with the received live_message
-            //     var dialogBox = document.querySelector('.dialog-box');
-            //     var snapshotText = JSON.stringify(liveMessage, null, 2);  // Beautify JSON for display
-            //     dialogBox.innerText = snapshotText;
-
-            //     // Show the dialog box when a WebSocket message is received
-            //     dialogBox.style.display = "block";
-            // };
 
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
@@ -208,7 +196,7 @@
                         editor = CodeMirror.fromTextArea(document.getElementById("myEditor"), {
                             lineNumbers: true,
                             mode: "javascript",
-                            theme: "monokai", // Set the theme as desired
+                            theme: "monokai", // Set the theme as desi#ee4c4c
                             lineWrapping: true, // Enable line wrapping
                             readOnly: true,
                             // gutters: ["CodeMirror-linenumbers", "tracepoint"] // Add the "tracepoint" gutter
@@ -230,36 +218,33 @@
             // Call the function to fetch and display the API code in CodeMirror format
             fetchApiCode();
 
-
-
-
-
             function fetchAndDisplayTracepointEvents(port) {
-
                 $.ajax({
-
                     type: "GET",
                     url: `{{ server_url }}:${port}/getTracepointEvents/${port}`,
                     success: function (response) {
                         console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
-                        var event = response.events;
-                        console.log("here is the event",event,event.methodName);
-                        // var formattedEvent = '';
+                        if (response && response.events) {
+                            var event = response.events;
+                            console.log("here is the event", response, event);
+                            var formattedEvent = '';
+                            for (var i = 0; i < event.length; i++) {
 
-                        // formattedEvent += 'Timestamp: ' + event.timestamp + '\n';
-                        // formattedEvent += 'File Name: ' + event.fileName + '\n';
-                        // formattedEvent += 'Method Name: ' + event.methodName + '\n';
-                        // formattedEvent += 'Line Number: ' + event.lineNo + '\n';
+                                formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #eafac2;">' + event[i].timestamp + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #eafac2;">' + event[i].fileName + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #eafac2;">' + event[i].methodName + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + (event[i].lineNo + 1) + '</span><br>';
 
-                        // if (event.variables && event.variables.board) {
-                        //     formattedEvent += 'Board: ' + JSON.stringify(event.variables.board['@value']) + '\n';
-                        // }
+                                if (event[i].variables && event[i].variables.board) {
+                                    formattedEvent += '<span style="color: #f27979;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
+                                }
 
-                        // formattedEvent += '\n';
-                        var snapshotText = JSON.stringify(event, null, 2);
-                        dialogBox.innerText = snapshotText;
-                        dialogBox.style.display = "block";
+                                formattedEvent += '<br>';
+                            }
+                            dialogBox.innerHTML  = formattedEvent;
+                            dialogBox.style.display = "block";
+                        }
                     },
                     error: function (xhr, status, err) {
                         console.error(status, err.toString());

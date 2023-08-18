@@ -7,18 +7,6 @@ body {
 }
 
 
-.dialog-box {
-    display: none;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    max-width: 400px;
-    max-height: 300px;
-    overflow-y: auto; /* Enable vertical scrolling when content exceeds max-height */
-    padding: 10px;
-    font-size: 12px; /* Adjust the font size as needed */
-}
-
 
 
 .left {
@@ -62,25 +50,40 @@ body {
 
 .dialog-box {
     position: fixed;
-    height: 240px;
-    width: 300px;
-    left: 42%;
-    top: 73px;
-    /* right: 0; */
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    border-radius: 5px;
-    display: flex;
+    width: 330px;
+    height: 270px;
+    left: 55%;
+    top: 75px;
+    overflow-x: hidden;
+    transform: translateX(-50%);
+    box-shadow: 0 8px 13px rgba(100, 99, 99, 0.536);
+    padding: 15px;
     z-index: 15;
-    /* margin: auto; */
-    padding: 20px;
+    border-radius: 10px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    text-align: center;
+    background-color: rgba(61, 59, 59, 0.941);
+    color: #f27979;
+    border: 2px solid rgba(198, 192, 192, 0.725);
+    border-radius: 5px;
+    font-size: 10px;
+    font-family: 'Poppins', sans-serif;
 }
 
+.dialog-box::-webkit-scrollbar {
+    width: 10px;               /* width of the entire scrollbar */
+  }
+  
+  .dialog-box::-webkit-scrollbar-track {
+    background: rgba(61, 59, 59, 0.941);   /* color of the tracking area */
+  }
+  
+  .dialog-box::-webkit-scrollbar-thumb {
+    background-color: rgb(193, 181, 181);    /* color of the scroll thumb */
+    border-radius: 20px;       /* roundness of the scroll thumb */
+    border: 3px solid rgba(61, 59, 59, 0.941); /* creates padding around scroll thumb */
+  }
 .dbox {
     /* top: 0px; */
     border-radius: 6px;
@@ -90,7 +93,7 @@ body {
     height: 30px;
     position: absolute;
     display: inline-block;
-    background-color: rgb(225, 225, 166);
+    background-color: rgb(191, 234, 99);
     font-size: 15px;
     font-family: auto;
     display: flex;
@@ -101,30 +104,10 @@ body {
 }
 
 .dbox:hover {
-    background-color: rgb(221, 221, 140);
+    background-color: rgb(153, 195, 62);
     cursor: pointer;
 }
 
-/* .close-dbox {
-    position: absolute;
-    margin: 20px;
-    border-radius: 5px;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: white;
-    padding: 6px 24px;
-    background-color: rgb(255, 175, 175);
-    font-weight: bold;
-    border: 2px #c90000;
-}
-
-.close-dbox:hover {
-    background-color: rgb(236, 95, 95);
-    cursor: pointer;
-} */
 
 .editor-container {
     position: relative;
