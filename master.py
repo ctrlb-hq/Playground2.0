@@ -72,7 +72,7 @@ def get_public_ip():
     data = response.json()
     ip_address = data["ip"]
     # return "ec2-43-204-221-58.ap-south-1.compute.amazonaws.com"
-    return "localhost"
+    # return "localhost"
     return ip_address
 
 def get_free_port(email):
@@ -163,7 +163,7 @@ async def websocket_handler(websocket, path):
     assert path == "/ws/app"
     async for message in websocket:
         message_json = json.loads(message)
-        print("Received:", message_json)
+        # print("Received:", message_json)
         if message_json["name"]=="FilterTracePointsRequest":
             # When the agent starts it sends this request
             # So we can save the websocket for this port and email
@@ -178,7 +178,6 @@ async def websocket_handler(websocket, path):
             live_message = {}
             live_message["timestamp"] = get_time()
             live_message["fileName"] = message_json["className"]
-            # live_message["className"]=message_json["className"]
             live_message["methodName"] = message_json["methodName"]
             live_message["lineNo"] = message_json["lineNo"]
             # live_message["traceId"] = message_json["traceId"]
@@ -186,7 +185,7 @@ async def websocket_handler(websocket, path):
             if len(message_json["frames"])>0 and "variables" in message_json["frames"][0]:
                 live_message["variables"] = message_json["frames"][0]["variables"]
             # Send the live_message to the connected client
-            print("this is port",port)
+            print("live_message",live_message)
             def send_live_message_to_server_js(port, live_message):
                 url = f'http://{get_public_ip()}:{port}/addTracepointEvent'
                 # print(url)
