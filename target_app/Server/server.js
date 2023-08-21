@@ -70,7 +70,7 @@ app.post('/addTracepointEvent', (req, res) => {
   if (!tracepointEventsByPort[port]) {
     tracepointEventsByPort[port] = [];
   }
-  tracepointEventsByPort[port].push(liveMessage);
+  tracepointEventsByPort[port].unshift(liveMessage);
   try {
     res.status(200).json({ message: 'Live message added successfully.' });
   } catch (error) {
