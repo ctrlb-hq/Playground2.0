@@ -6,8 +6,107 @@ body {
     display: flex;
 }
 
+/* Customize Shepherd buttons */
+.shepherd-button {
+    background: #106dfb;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 9px 23px;
+    cursor: pointer;
+    font-size: 14px;
+    /* transition: background-color 0.3s, color 0.3s; */
+}
 
 
+
+/* Customize Shepherd tooltips */
+.shepherd-tooltip-class-1,
+.shepherd-tooltip-class-2 {
+    background-color: #3949ab;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    max-width: 300px;
+    font-size: 14px;
+    animation: fadeInUp 0.3s ease-in-out;
+}
+
+/* Animation for fading in */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Customize Shepherd elements */
+.shepherd-element {
+    background: rgba(255, 255, 255, 0.9);
+    margin: 25px !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* Additional styles for Shepherd header, content, footer */
+.shepherd-header {
+    font-family: 'ADLaM Display', cursive;
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #3949ab;
+    padding: 10px !important;
+}
+
+.shepherd-title{
+    font-size: 20px;
+}
+.shepherd-footer {
+    text-align: right;
+}
+
+.shepherd-text{
+    font-family: 'Signika Negative', sans-serif;
+    font-size: 17px;
+}
+/* Customize Shepherd next button */
+.shepherd-button-primary {
+    background: #106dfb;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 9px 23px;
+    cursor: pointer;
+    font-size: 14px;
+    /* transition: background-color 0.3s, color 0.3s; */
+}
+
+/* .shepherd-button-primary:hover {
+    background-color: #005de8 !important;
+    color: white !important;
+} */
+.shepherd-button:hover {
+    background: #0050c9 !important;
+    color: white !important;
+}
+
+.shepherd-button.shepherd-button-secondary {
+    background: #f1f2f3;
+    color: rgba(0,0,0,.75)
+}
+
+.shepherd-button.shepherd-button-secondary:hover {
+    background: #d6d9db !important;
+    color: rgba(0,0,0,.75) !important;
+}
 
 .left {
     background-color: #272727;

@@ -2,7 +2,9 @@
 
 <head>
     <title>Tic-Tac-Toe</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Signika+Negative&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Handjet&display=swap" rel="stylesheet">
@@ -23,9 +25,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
 </head>
 
 <body>
+    <!-- <button id="nextButton">Next</button> -->
     <div class="left">
         <div class="icon">
             <img src={{ url_for('static', filename='img/coding.png' ) }} alt="icon" class="img">
@@ -40,6 +45,7 @@
         <div class="editor-container">
             <textarea id="myEditor"></textarea>
             <div class="cm-tracepoint-gutter"></div>
+            <div class="cm-tracepoint-gutter custom-spacing"></div>
         </div>
     </div>
     <div class="right">
@@ -103,13 +109,169 @@
         </div>
         <!-- <button class="newGame">New Game</button> -->
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
 
     <script>
         $(document).ready(function () {
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
 
+            const tour = new Shepherd.Tour({
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'class-1 class-2',
+                    scrollTo: { behavior: 'smooth', block: 'center' }
+                }
+            });
+
+            // Step 1: Welcome
+            tour.addStep({
+                title: 'Welcome to CtrlB Playground ! 👋🏼',
+                text: `Hello Folks, this is CtrlB's Playground. Let's have a tour of the same to understand it better, follow the steps`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'welcome'
+            });
+
+            // Step 2: Making a Move
+            tour.addStep({
+                title: 'Make your first Move ! 👾',
+                text: 'Click on the Tic-Tac-Toe board to make a move as "X" or "O"',
+                attachTo: {
+                    element: '.board',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'making-move'
+            });
+
+            // Step 3: Code for the Game
+            tour.addStep({
+                title: 'Logic behind the Game 💡',
+                text: 'Here is the code for the game, all the functions have been explained with their impact :)',
+                attachTo: {
+                    element: '.left',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'code-for-game'
+            });
+
+            // Step 4: Adding a Tracepoint
+            tour.addStep({
+                title: `Let's add a Tracepoint now? 🔴`,
+                text: 'Click on any line number to add a tracepoint which would be very useful for debugging',
+                attachTo: {
+                    element: '.cm-tracepoint-gutter',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'adding-tracepoint'
+            });
+
+            // Step 5: Making a Move Again
+            tour.addStep({
+                title: 'Make a Move Again 🎯',
+                text: 'Click on the Tic Tac Toe board to make another move as "X" or "O" and observe the snapshot for the tracepoint you added',
+                attachTo: {
+                    element: '.board',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'making-move-again'
+            });
+
+            // Step 6: Viewing a Snapshot
+            tour.addStep({
+                title: `Now Let's view the Snapshot 🔎`,
+                text: 'Click on this button to view the snapshot that has been taken for the Line numbers ',
+                attachTo: {
+                    element: '.dbox',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Finish'
+                    }
+                ],
+                id: 'viewing-snapshot'
+            });
+
+            tour.start();
 
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
@@ -150,6 +312,7 @@
             }
             // Function to add a tracepoint marker on click
             function addTracepointMarker(lineNumber) {
+                // lineNumber -= 1;
                 var marker = document.createElement("div");
                 marker.classList.add("line-marker");
                 var cm = editor; // Get the CodeMirror instance
@@ -163,6 +326,7 @@
 
             // Function to remove a tracepoint marker on click
             function removeTracepointMarker(lineNumber) {
+                // lineNumber -= 1;
                 var cm = editor; // Get the CodeMirror instance
                 var gutters = cm.getOption("gutters"); // Get the list of gutters
                 var gutterIndex = gutters.indexOf("tracepoint"); // Find the index of the "tracepoint" gutter
@@ -226,7 +390,7 @@
                         console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
                         if (response && response.events) {
-                            var event = response.events;
+                            event = response.events;
                             console.log("here is the event", response, event);
                             var formattedEvent = '';
                             for (var i = 0; i < event.length; i++) {
@@ -234,7 +398,7 @@
                                 formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #eafac2;">' + event[i].timestamp + '</span><br>';
                                 formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #eafac2;">' + event[i].fileName + '</span><br>';
                                 formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #eafac2;">' + event[i].methodName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + (event[i].lineNo + 1) + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + event[i].lineNo + '</span><br>';
                                 formattedEvent += '<span style="color: #f27979;">Variables:</span> </span><br>';
                                 console.log(event[i].variables);
                                 if (event[i].variables && event[i].variables.board) {
@@ -255,7 +419,7 @@
 
                                 formattedEvent += '<br>';
                             }
-                            dialogBox.innerHTML  = formattedEvent;
+                            dialogBox.innerHTML = formattedEvent;
                             dialogBox.style.display = "block";
                         }
                     },

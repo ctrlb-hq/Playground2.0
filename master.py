@@ -272,7 +272,7 @@ async def sendRemoveTracepoint(email, line_no):
 def receive_request():
     data = request.get_json()
     port = int(data.get('port'))
-    lineNumber = data.get('lineNumber')
+    lineNumber = data.get('lineNumber')+1
     print(f"Received request from port {port} for line number {lineNumber}")
     # Code to handle the received request 
     asyncio.run(sendPutTracepoint(lineNumber, port))
@@ -283,7 +283,7 @@ def receive_request():
 def remove_tracepoint():
     data = request.get_json()
     port = data.get('port')
-    lineNumber = data.get('lineNumber')
+    lineNumber = data.get('lineNumber')+1
     print(f"Received request to remove tracepoint from port {port} for line number {lineNumber}")
 
      # Get the email associated with the port

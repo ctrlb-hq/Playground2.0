@@ -1,11 +1,55 @@
 const express = require('express');
 
+
 "use strict";
 
-// const unbeatableTicTacToe = require('../../Methods/tic-tac-toe/unbeatableTicTacToe');
-// const move = require('../../Methods/tic-tac-toe/unbeatableTicTacToe');
+function ticTacToe(req,res) {
+	let input = JSON.parse(req.body.board);
+	let output = unbeatableTicTacToe(input);
+  res.json({board : output});
+}
 
 
+function gameWinner(req,res) {
+	let input = JSON.parse(req.body.board);
+	let output = winner(input);
+  res.json({winner : output});
+}
+
+
+function nextMove(req,res) {
+	let input = JSON.parse(req.body.board);
+	let output = move(input);
+  res.json({nextMove : output});
+}
+
+//firstMove function returns the position (assuming the tic-tac-toe board is numbered 0-8) a player should take for their first move. If an empty board is passed in, the function assumes it is making the first move in the game.
+function firstMove(board){
+	return board.indexOf('X') === 4 || board.indexOf('X') === -1 ? 0 : 4
+}
+
+// winningCombo function accepts an array as a parameter and returns 'undefined' if there is no winning tic-tac-toe combination. If there is a winning tic-tac-toe combination, the function will return an array containing the winning combination
+function winningCombo(board){
+	if (board === undefined) return undefined
+	var winningCombinations = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
+		[0, 3, 6],
+		[1, 4, 7],
+		[2, 5, 8],
+		[0, 4, 8],
+		[2, 4, 6]
+	];
+	var winner = winningCombinations.find(combo =>
+    board[combo[0]] !== '' &&
+    board[combo[0]] === board[combo[1]] &&
+    board[combo[1]] === board[combo[2]]
+  );
+  return winner
+}
+
+//currentTurn function works on the present turn and updates the number of X and O.
 function currentTurn(board){
 	let x = 0;
 	let o = 0;
@@ -18,11 +62,7 @@ function currentTurn(board){
 
 }
 
-
-/*
-addBoard function accepts board(array) and position and returns new tic-tac-toe array with added element.
-*/
-
+//addBoard function accepts board(array) and position and returns new tic-tac-toe array with added element.
 function addBoard(board, position){
 	let move = currentTurn(board);
 	let newBoard = [];
@@ -34,41 +74,22 @@ function addBoard(board, position){
 			newBoard.push(board[i]);
 		}
 	}
-
 	return newBoard;
-
 }
 
-// /*
 // gameCounter function counts the number of moves in a tic-tac-toe array
-// */
 function gameCounter(board){
 	let counter = 0
-
 	board.forEach(element =>{
 		if(element !== '') counter++
 	});
-
 	return counter;
 }
 
-/*
-firstMove function returns the position (assuming the tic-tac-toe board is numbered 0-8) a player should take for their first move.
-If an empty board is passed in, the function assumes it is making the first move in the game.
-*/
 
-function firstMove(board){
 
-	return board.indexOf('X') === 4 || board.indexOf('X') === -1 ? 0 : 4
-
-}
-
-/*
-secondMove function returns the optimal move for player X given player O position choice.
-*/
-
+//secondMove function returns the optimal move for player X given player O position choice.
 function secondMove(board){
-
 	switch (board.indexOf('O')) {
 		case 1:
 		case 2:
@@ -87,15 +108,9 @@ function secondMove(board){
 			return 2;
 			break;
 	}
-
 }
 
-
-
-/*
-move function accepts tic-tac-toe array as a parameter and returns index position for the next move.
-*/
-
+//move function accepts tic-tac-toe array as a parameter and returns index position for the next move.
 function move(board){
 	switch (gameCounter(board)) {
 		case 0:
@@ -114,14 +129,10 @@ function move(board){
 			return incrementalMove(board);
 			break;
 	}
-
 }
 
-/*
-winningMove function accepts an array as a parameter and returns 'false' if there is no winning spot on the board.
-If there is a winning tic-tac-toe position, the function will return the index position on the board.
-*/
-
+// winningMove function accepts an array as a parameter and returns 'false' if there is no winning spot on the board.
+// If there is a winning tic-tac-toe position, the function will return the index position on the board.
 function winningMove(board){
 	var winningCombinations = [
 		[0, 1, 2],
@@ -133,15 +144,12 @@ function winningMove(board){
 		[0, 4, 8],
 		[2, 4, 6]
 	];
-
 	var winningIndex = false;
-
 	var move = winningCombinations.find(combo => {
 		let xCount = 0;
 		let yCount = 0;
 		let emptyCount = 0;
 		let emptyIndex;
-
 		combo.reduce((n, val, index) => {
 			if(board[val] === 'X') xCount++
 			if(board[val] === 'O') yCount++
@@ -150,41 +158,28 @@ function winningMove(board){
 				emptyIndex = val;
 			}
 		}, 0)
-
 		if ((xCount || yCount) === 2 && emptyCount === 1) winningIndex = emptyIndex
-
 		return (xCount || yCount) === 2 && emptyCount === 1;
-	
 	});
-
 	return winningIndex;
-
 }
 
 
-// /*
 // gameCounter function counts the number of moves in a tic-tac-toe array
-// */
 function gameCounter(board){
 	let counter = 0
-
 	board.forEach(element =>{
 		if(element !== '') counter++
 	});
-
 	return counter;
 }
 
-/*
-incrementalMove function returns the optimal move given opponents position choice.
-*/
-
+// incrementalMove function returns the optimal move given opponents position choice.
 function incrementalMove(board){
 
 	if (typeof winningMove(board) === 'number') {
 		return winningMove(board);
 	}
-
 	switch (gameCounter(board)) {
 		case 3:
 			if(board[0] === 'X' && board[5] === 'X') return 7;
@@ -213,82 +208,26 @@ function incrementalMove(board){
 		default:
 			return board.indexOf('');
 	}
-
 }
 
-
-/*
-unbeatableTicTacToe function accepts tic-tac-toe array as a parameter and returns tic-tac-toe board with optimal next move added to board.
-*/
-
+// unbeatableTicTacToe function accepts tic-tac-toe array as a parameter and returns tic-tac-toe board with optimal next move added to board.
 function unbeatableTicTacToe(board){
 	let position = move(board);
-
 	return addBoard(board,position);
-
 }
 
-/*
-winningCombo function accepts an array as a parameter and returns 'undefined' if there is no winning tic-tac-toe combination.
-If there is a winning tic-tac-toe combination, the function will return an array containing the winning combination
-*/
 
-function winningCombo(board){
-	if (board === undefined) return undefined
-	var winningCombinations = [
-		[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-		[0, 3, 6],
-		[1, 4, 7],
-		[2, 5, 8],
-		[0, 4, 8],
-		[2, 4, 6]
-	];
 
-	var winner = winningCombinations.find(combo =>
-    board[combo[0]] !== '' &&
-    board[combo[0]] === board[combo[1]] &&
-    board[combo[1]] === board[combo[2]]
-  );
 
-  return winner
-
-}
-
-/*
-winner function accepts tic-tac-toe board array as a paramenter and determines if the game has a winner.
-Returns 'Tie', 'In Progress', 'X wins', 'O wins' 
-*/
-
+// winner function accepts tic-tac-toe board array as a paramenter and determines if the game has a winner.
+// Returns 'Tie', 'In Progress', 'X wins', 'O wins' 
 function winner(board){
-
 	if (!winningCombo(board) && board.indexOf('') > -1) return 'In Progress';
 	if (!winningCombo(board) && board.indexOf('') === -1) return 'Tie';
 	if (winningCombo(board)) return board[winningCombo(board)[0]] + ' Wins';
-
 }
 
-// const gameWinner = require('../../Methods/tic-tac-toe/winner');
 
-function ticTacToe(req,res) {
-	let input = JSON.parse(req.body.board);
-	let output = unbeatableTicTacToe(input);
-  res.json({board : output});
-}
-
-function gameWinner(req,res) {
-	let input = JSON.parse(req.body.board);
-	let output = winner(input);
-  res.json({winner : output});
-}
-
-function nextMove(req,res) {
-	let input = JSON.parse(req.body.board);
-	let output = move(input);
-	// let newBoard = addBoard(input,output);
-  res.json({nextMove : output});
-}
 
 const router = express.Router();
 
@@ -303,7 +242,5 @@ router.post('/winner',
 router.post('/move',
   nextMove
 );
-
-
 
 module.exports = router;
