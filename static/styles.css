@@ -107,7 +107,20 @@ body {
     background: #d6d9db !important;
     color: rgba(0,0,0,.75) !important;
 }
+.expanded-content {
+    margin-top: 5px;
+    white-space: pre-wrap;
+}
 
+.expand-button {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.expanded {
+    display: block !important;
+}
 .left {
     background-color: #272727;
     position: absolute;

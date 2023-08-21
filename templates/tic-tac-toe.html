@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
 
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    
+
 </head>
 
 <body>
@@ -110,9 +110,11 @@
         <!-- <button class="newGame">New Game</button> -->
     </div>
     <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
         $(document).ready(function () {
+
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
 
@@ -382,6 +384,17 @@
             // Call the function to fetch and display the API code in CodeMirror format
             fetchApiCode();
 
+            
+
+            $(document).on("click", ".expand-button", function () {
+                var expandableContent = $(this).siblings(".expanded-content");
+                expandableContent.slideToggle();
+                if (expandableContent.is(":visible")) {
+                    $(this).text("Hide");
+                } else {
+                    $(this).text("...");
+                }
+            });
             function fetchAndDisplayTracepointEvents(port) {
                 $.ajax({
                     type: "GET",
@@ -405,10 +418,18 @@
                                     formattedEvent += '<span style="color: #c57d7d;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.req) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']).substring(0,271)+"......." + '</span><br>';
                                 }
+                                // if (event[i].variables && event[i].variables.req) {
+                                //     formattedEvent += '<span style="color: #c57d7d;">Req:</span> ' +
+                                //         '<span class="expand-button">...</span>' +
+                                //         '<div class="expanded-content" style="display: none;">' +
+                                //         JSON.stringify(event[i].variables.req['@value']) +
+                                //         '</div><br>';
+                                // }
+
                                 if (event[i].variables && event[i].variables.res) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']).substring(0,132)+"......." + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.input) {
                                     formattedEvent += '<span style="color: #c57d7d;">Input:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
