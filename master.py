@@ -149,7 +149,6 @@ def port_watcher():
     global database
     global stop_port_watcher
     while not stop_port_watcher:
-        print("Triggering port watcher...")
         cleanup_stale_ports()
         time.sleep(sleep_watcher_for_seconds)  # Check every 60 seconds
 
