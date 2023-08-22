@@ -90,7 +90,7 @@ def get_public_ip():
     data = response.json()
     ip_address = data["ip"]
     # return "ec2-43-204-221-58.ap-south-1.compute.amazonaws.com"
-    return "localhost"
+    # return "localhost"
     return ip_address
 
 def get_free_port(email):

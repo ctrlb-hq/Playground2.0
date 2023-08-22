@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-
 "use strict";
 
 router.post('/winner',
@@ -51,7 +50,6 @@ function gameWinner(req,res) {
 winner function accepts tic-tac-toe board array as a paramenter and determines if the game has a winner.
 Returns 'Tie', 'In Progress', 'X wins', 'O wins' 
 */
-
 function winner(board){
 
 	if (!winningCombo(board) && board.indexOf('') > -1) return 'In Progress';
@@ -64,9 +62,9 @@ function winner(board){
 winningCombo function accepts an array as a parameter and returns 'undefined' if there is no winning tic-tac-toe combination.
 If there is a winning tic-tac-toe combination, the function will return an array containing the winning combination
 */
-
 function winningCombo(board){
 	if (board === undefined) return undefined
+
 	var winningCombinations = [
 		[0, 1, 2],
 		[3, 4, 5],
@@ -88,9 +86,9 @@ function winningCombo(board){
 
 }
 
-// /*
-// gameCounter function counts the number of moves in a tic-tac-toe array
-// */
+/*
+gameCounter function counts the number of moves in a tic-tac-toe array
+*/
 function gameCounter(board){
 	let counter = 0
 
@@ -105,7 +103,6 @@ function gameCounter(board){
 firstMove function returns the position (assuming the tic-tac-toe board is numbered 0-8) a player should take for their first move.
 If an empty board is passed in, the function assumes it is making the first move in the game.
 */
-
 function firstMove(board){
 
 	return board.indexOf('X') === 4 || board.indexOf('X') === -1 ? 0 : 4
@@ -115,7 +112,6 @@ function firstMove(board){
 /*
 secondMove function returns the optimal move for player X given player O position choice.
 */
-
 function secondMove(board){
 
 	switch (board.indexOf('O')) {
@@ -139,16 +135,12 @@ function secondMove(board){
 
 }
 
-
-
-
-
 /*
 winningMove function accepts an array as a parameter and returns 'false' if there is no winning spot on the board.
 If there is a winning tic-tac-toe position, the function will return the index position on the board.
 */
-
 function winningMove(board){
+	
 	var winningCombinations = [
 		[0, 1, 2],
 		[3, 4, 5],
@@ -187,10 +179,9 @@ function winningMove(board){
 
 }
 
-
-// /*
-// gameCounter function counts the number of moves in a tic-tac-toe array
-// */
+/*
+gameCounter function counts the number of moves in a tic-tac-toe array
+*/
 function gameCounter(board){
 	let counter = 0
 
@@ -204,7 +195,6 @@ function gameCounter(board){
 /*
 incrementalMove function returns the optimal move given opponents position choice.
 */
-
 function incrementalMove(board){
 
 	if (typeof winningMove(board) === 'number') {
@@ -241,12 +231,5 @@ function incrementalMove(board){
 	}
 
 }
-
-
-
-
-
-
-
 
 module.exports = router;
