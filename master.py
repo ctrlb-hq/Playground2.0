@@ -38,8 +38,6 @@ kill_child_process_in_seconds = int(os.getenv("KILL_CHILD_PROCESS_IN_SECONDS"))
 sleep_watcher_for_seconds = int(os.getenv("SLEEP_WATCHER_FOR_SECONDS"))
 
 # Escape the username and password using urllib.parse.quote_plus
-escaped_username = quote_plus(username)
-escaped_password = quote_plus(password)
 mongo_uri = f"mongodb+srv://{username}:{password}@{cluster_name}/{dbname}?retryWrites=true&w=majority"
 
 app.config["MONGO_URI"] = mongo_uri
@@ -58,6 +56,7 @@ except OperationFailure as e:
 # Flag to signal the port_watcher thread to stop
 stop_port_watcher = False
 database = Database()
+LAST_ACTIVE_PORT = None
 
 # Outside of any function, at the beginning of your script
 tracepoint_events_by_port = {}  # {port: [live_message1, live_message2, ...]}
@@ -97,10 +96,11 @@ def get_public_ip():
 def get_free_port(email):
     """Find and return an available free port."""
     global database
-    for port in range(start_port, end_port):
+    while True:
+        database.increment_last_active_port(start_port, end_port)
+        port = database.get_last_active_port()
         if not database.check_port_in_use(port):
             return port
-    return None
 
 def start_new_target_app(free_port, email):
     """Start a new instance of target_app."""
@@ -349,7 +349,7 @@ def sandbox():
     if port and check_server_availability(port):
         return render_template("tic-tac-toe.html", port=port, server_url=f"http://{get_public_ip()}")
     else:
-        return f"Failed to get data from localhost:{port}", 500
+        return f"This sandbox has been deleted. Please visit the homepage again.", 500
     
 if __name__ == "__main__":
     # Start the port watcher as a separate thread

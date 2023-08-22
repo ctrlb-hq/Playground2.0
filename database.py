@@ -5,6 +5,7 @@ class Database:
         self.db_lock = threading.Lock()
         self.ports_to_email_map = {} # {port:email}
         self.db = {}
+        self.last_active_port = None
         #   {
         #   email:   {
         #       "port": port,
@@ -16,6 +17,22 @@ class Database:
         #         }
         #       }
         #   }
+
+    def get_last_active_port(self):
+        with self.db_lock:
+            return self.last_active_port
+    
+    def increment_last_active_port(self, start, end):
+        with self.db_lock:
+            if not self.last_active_port:
+                self.last_active_port = start
+                return
+            if self.last_active_port < end-1:
+                self.last_active_port += 1
+                return
+            else:
+                self.last_active_port = start
+                return
         
     def get_data_for_email(self, email):
         with self.db_lock:
