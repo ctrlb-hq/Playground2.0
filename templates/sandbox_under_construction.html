@@ -4,64 +4,68 @@
   <title>Tic-Tac-Toe</title>
   <style>
     body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f0f0f0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
-  overflow: hidden;
-}
+      font-family: 'ADLaM Display', cursive;
+      font-size: 25px;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
 
-#loading-message {
-  font-size: 24px;
-  text-align: center;
-  margin-bottom: 20px;
-}
+    #loading-message {
+      font-family: 'ADLaM Display', cursive;
+      font-size: 25px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-.loading-circle {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  border: 10px solid transparent;
-  border-top: 9px solid #2079b4;
-  border-radius: 50%;
-  animation: spin 2s linear infinite;
-  margin-bottom: 10px;
-}
+    .loading-circle {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border: 10px solid transparent;
+      border-top: 9px solid #2079b4;
+      border-radius: 50%;
+      animation: spin 2s linear infinite;
+      margin-bottom: 10px;
+    }
 
-.inner-image {
-  width: 60px;
-  height: 60px;
-  background-image: url('../static/img/ctrlbnew.png'); /* Replace with your image URL */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
+    .inner-image {
+      width: 60px;
+      height: 60px;
+      background-image: url('../static/img/ctrlbnew.png');
+      /* Replace with your image URL */
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
 
-/* @keyframes pulse {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* @keyframes pulse {
   0% {
     transform: scale(1);
   }
@@ -70,6 +74,8 @@
   }
 } */
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

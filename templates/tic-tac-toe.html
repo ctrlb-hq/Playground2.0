@@ -2,7 +2,11 @@
 
 <head>
     <title>Tic-Tac-Toe</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Signika+Negative&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Handjet&display=swap" rel="stylesheet">
@@ -23,9 +27,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
 </head>
 
 <body>
+    <!-- <button id="nextButton">Next</button> -->
     <div class="left">
         <div class="icon">
             <img src={{ url_for('static', filename='img/coding.png' ) }} alt="icon" class="img">
@@ -40,6 +47,7 @@
         <div class="editor-container">
             <textarea id="myEditor"></textarea>
             <div class="cm-tracepoint-gutter"></div>
+            <div class="cm-tracepoint-gutter custom-spacing"></div>
         </div>
     </div>
     <div class="right">
@@ -103,13 +111,171 @@
         </div>
         <!-- <button class="newGame">New Game</button> -->
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
         $(document).ready(function () {
+
             var port = `{{ port }}`;
             var editor = null; // Declare the editor variable globally
+            var dialogBoxVisible = false;
+            const tour = new Shepherd.Tour({
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'class-1 class-2',
+                    scrollTo: { behavior: 'smooth', block: 'center' }
+                }
+            });
 
+            // Step 1: Welcome
+            tour.addStep({
+                title: 'Welcome to CtrlB Playground ! 👋🏼',
+                text: `Hello Folks, this is CtrlB's Playground. Let's have a tour of the same to understand it better, follow the steps`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'welcome'
+            });
+
+            // Step 2: Making a Move
+            tour.addStep({
+                title: 'Make your first Move ! 👾',
+                text: 'Click on the Tic-Tac-Toe board to make a move as "X" or "O"',
+                attachTo: {
+                    element: '.board',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'making-move'
+            });
+
+            // Step 3: Code for the Game
+            tour.addStep({
+                title: 'Logic behind the Game 💡',
+                text: 'Here is the code for the game, all the functions have been explained with their impact :)',
+                attachTo: {
+                    element: '.left',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'code-for-game'
+            });
+
+            // Step 4: Adding a Tracepoint
+            tour.addStep({
+                title: `Let's add a Tracepoint now? 🔴`,
+                text: 'Click on any line number to add a tracepoint which would be very useful for debugging',
+                attachTo: {
+                    element: '.cm-tracepoint-gutter',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'adding-tracepoint'
+            });
+
+            // Step 5: Making a Move Again
+            tour.addStep({
+                title: 'Make a Move Again 🎯',
+                text: 'Click on the Tic Tac Toe board to make another move as "X" or "O" and observe the snapshot for the tracepoint you added',
+                attachTo: {
+                    element: '.board',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Next'
+                    }
+                ],
+                id: 'making-move-again'
+            });
+
+            // Step 6: Viewing a Snapshot
+            tour.addStep({
+                title: `Now Let's view the Snapshot 🔎`,
+                text: 'Click on this button to view the snapshot that has been taken for the Line numbers ',
+                attachTo: {
+                    element: '.dbox',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Finish'
+                    }
+                ],
+                id: 'viewing-snapshot'
+            });
+
+            tour.start();
 
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
@@ -150,6 +316,7 @@
             }
             // Function to add a tracepoint marker on click
             function addTracepointMarker(lineNumber) {
+                // lineNumber -= 1;
                 var marker = document.createElement("div");
                 marker.classList.add("line-marker");
                 var cm = editor; // Get the CodeMirror instance
@@ -163,6 +330,7 @@
 
             // Function to remove a tracepoint marker on click
             function removeTracepointMarker(lineNumber) {
+                // lineNumber -= 1;
                 var cm = editor; // Get the CodeMirror instance
                 var gutters = cm.getOption("gutters"); // Get the list of gutters
                 var gutterIndex = gutters.indexOf("tracepoint"); // Find the index of the "tracepoint" gutter
@@ -218,6 +386,17 @@
             // Call the function to fetch and display the API code in CodeMirror format
             fetchApiCode();
 
+
+
+            $(document).on("click", ".expand-button", function () {
+                var expandableContent = $(this).siblings(".expanded-content");
+                expandableContent.slideToggle();
+                if (expandableContent.is(":visible")) {
+                    $(this).text("Hide");
+                } else {
+                    $(this).text("...");
+                }
+            });
             function fetchAndDisplayTracepointEvents(port) {
                 $.ajax({
                     type: "GET",
@@ -226,7 +405,7 @@
                         console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
                         if (response && response.events) {
-                            var event = response.events;
+                            event = response.events;
                             console.log("here is the event", response, event);
                             var formattedEvent = '';
                             for (var i = 0; i < event.length; i++) {
@@ -234,17 +413,18 @@
                                 formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #eafac2;">' + event[i].timestamp + '</span><br>';
                                 formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #eafac2;">' + event[i].fileName + '</span><br>';
                                 formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #eafac2;">' + event[i].methodName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + (event[i].lineNo + 1) + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + event[i].lineNo + '</span><br>';
                                 formattedEvent += '<span style="color: #f27979;">Variables:</span> </span><br>';
                                 console.log(event[i].variables);
                                 if (event[i].variables && event[i].variables.board) {
                                     formattedEvent += '<span style="color: #c57d7d;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.req) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "......." + '</span><br>';
                                 }
+
                                 if (event[i].variables && event[i].variables.res) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "......." + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.input) {
                                     formattedEvent += '<span style="color: #c57d7d;">Input:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
@@ -255,8 +435,13 @@
 
                                 formattedEvent += '<br>';
                             }
-                            dialogBox.innerHTML  = formattedEvent;
+                            dialogBox.innerHTML = formattedEvent;
                             dialogBox.style.display = "block";
+                            // if (!dialogBoxVisible) {
+                            //     $('.dialog-box').show();
+                            //     startInterval(); // Start the interval when opening the dialog
+                            //     dialogBoxVisible = true;
+                            // }
                         }
                     },
                     error: function (xhr, status, err) {
@@ -264,15 +449,30 @@
                     }
                 });
             }
+            // Function to start the interval
+            
             var intervalId = null; // Declare intervalId globally
             function updateDialogBoxContent() {
-                var dialogBox = document.querySelector('.dialog-box');
+                // var dialogBox = document.querySelector('.dialog-box');
+                // var isDialogBoxVisible = dialogBox.style.display === "block";
                 if (dialogBoxVisible) {
                     fetchAndDisplayTracepointEvents(port);
+                    $('.dialog-box').show();
                 }
+                // fetchAndDisplayTracepointEvents(port);
+                // $('.dialog-box').show();
+                // startInterval();
+                // if (!isDialogBoxVisible) {
+                //     dialogBox.style.display = "block";
+                //     startInterval(); // Start the interval when opening the dialog
+                // }
+                // if (dialogBoxVisible) {
+                // fetchAndDisplayTracepointEvents(port);
+                // $('.dialog-box').show();
+                // startInterval();
+                // dialogBoxVisible = !dialogBoxVisible;
+                // }
             }
-
-            // Function to start the interval
             function startInterval() {
                 intervalId = setInterval(updateDialogBoxContent, 2000); // 5000 milliseconds = 5 seconds
             }
@@ -281,101 +481,56 @@
                 clearInterval(intervalId);
                 intervalId = null;
             }
-            var dialogBoxVisible = false;
+                $('#openDialogButton').on('click', function () {
+                    var dialogBox = $('.dialog-box');
+                    if (dialogBoxVisible) {
+                        dialogBox.hide();
+                        stopInterval(); // Stop the interval when closing the dialog
+                    } else {
+                        dialogBox.show();
+                        startInterval(); // Start the interval when opening the dialog
+                        fetchAndDisplayTracepointEvents(port);
+                    }
+                    dialogBoxVisible = !dialogBoxVisible;
+                });
 
-            $('#openDialogButton').on('click', function () {
-                // var dialogBox = $('.dialog-box');
-                if (dialogBoxVisible) {
-                    $('.dialog-box').hide();
-                    stopInterval(); // Stop the interval when closing the dialog
-                } else {
-                    $('.dialog-box').show();
-                    startInterval(); // Start the interval when opening the dialog
-                    fetchAndDisplayTracepointEvents(port);
+                var gameBoard = ['', '', '', '', '', '', '', '', ''];
+                var gameCounter = 0;
+                var gameStatus = 'In Progress'
+
+                $('.square').one('click', gameClick);
+                $('.newGame h2').on('click', newGame);
+                $('#O').one('click', playerO);
+
+                function playerTurn(count) {
+                    return count % 2 === 0 ? 'X' : 'O'
                 }
-                dialogBoxVisible = !dialogBoxVisible;
-                // fetchAndDisplayTracepointEvents(port);
-            });
 
-            $('#closeDialogButton').on('click', function (event) {
-                // Prevent the default behavior of the button, so it doesn't close the dialog
-                event.preventDefault();
-            });
+                function addToBoard(index) {
+                    return gameBoard[index] = playerTurn(gameCounter);
+                }
 
-            var gameBoard = ['', '', '', '', '', '', '', '', ''];
-            var gameCounter = 0;
-            var gameStatus = 'In Progress'
-
-            $('.square').one('click', gameClick);
-            $('.newGame h2').on('click', newGame);
-            $('#O').one('click', playerO);
-
-            function playerTurn(count) {
-                return count % 2 === 0 ? 'X' : 'O'
-            }
-
-            function addToBoard(index) {
-                return gameBoard[index] = playerTurn(gameCounter);
-            }
-
-            function computerMove() {
-                $.ajax({
-                    type: "POST",
-                    url: '{{ server_url }}:{{ port }}/api/move',
-                    data: { board: JSON.stringify(gameBoard) },
-                    dataType: 'json',
-                    success: function (obj) {
-                        var index = obj.nextMove;
-                        addToBoard(index);
-                        $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
-                        $('#' + index.toString()).unbind('click');
-                        gameCounter++;
-                        winner();
-                    },
-                    error: function (xhr, status, err) {
-                        console.error(status, err.toString());
-                    }
-                });
-            }
-
-            function winner() {
-                $.ajax({
-                    type: "POST",
-                    url: '{{ server_url }}:{{ port }}/api/winner',
-                    data: { board: JSON.stringify(gameBoard) },
-                    dataType: 'json',
-                    success: function (obj) {
-                        gameStatus = obj.winner;
-                        if (gameStatus !== 'In Progress') {
-                            $('.outcome h2').text(gameStatus);
+                function computerMove() {
+                    $.ajax({
+                        type: "POST",
+                        url: '{{ server_url }}:{{ port }}/api/move',
+                        data: { board: JSON.stringify(gameBoard) },
+                        dataType: 'json',
+                        success: function (obj) {
+                            var index = obj.nextMove;
+                            addToBoard(index);
+                            $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
+                            $('#' + index.toString()).unbind('click');
+                            gameCounter++;
+                            winner();
+                        },
+                        error: function (xhr, status, err) {
+                            console.error(status, err.toString());
                         }
-                    },
-                    error: function (xhr, status, err) {
-                        console.error(status, err.toString());
-                    }
-                });
-            }
+                    });
+                }
 
-            function newGame() {
-                gameBoard = ['', '', '', '', '', '', '', '', ''];
-                gameCounter = 0;
-                gameStatus = 'In Progress';
-                $('.square').unbind('click').one('click', gameClick);
-                $('#O').unbind('click').one('click', playerO);
-                $('.square h2').empty();
-                $('.outcome h2').empty();
-                $('#X').css({ 'background-color': 'lightgreen' });
-                $('#O').css({ 'background-color': 'white' });
-                return 'new game';
-            }
-
-            function gameClick(event) {
-                var square = $(event.currentTarget);
-                var index = square.attr('id');
-                if (gameStatus === 'In Progress') {
-                    $('#' + index).find('h2').text(playerTurn(gameCounter));
-                    addToBoard(parseInt(index));
-                    gameCounter++;
+                function winner() {
                     $.ajax({
                         type: "POST",
                         url: '{{ server_url }}:{{ port }}/api/winner',
@@ -385,27 +540,64 @@
                             gameStatus = obj.winner;
                             if (gameStatus !== 'In Progress') {
                                 $('.outcome h2').text(gameStatus);
-                            } else {
-                                computerMove();
                             }
                         },
                         error: function (xhr, status, err) {
                             console.error(status, err.toString());
                         }
                     });
-                    if (gameCounter > 0) {
-                        $('#O').off('click', playerO);
+                }
+
+                function newGame() {
+                    gameBoard = ['', '', '', '', '', '', '', '', ''];
+                    gameCounter = 0;
+                    gameStatus = 'In Progress';
+                    $('.square').unbind('click').one('click', gameClick);
+                    $('#O').unbind('click').one('click', playerO);
+                    $('.square h2').empty();
+                    $('.outcome h2').empty();
+                    $('#X').css({ 'background-color': 'lightgreen' });
+                    $('#O').css({ 'background-color': 'white' });
+                    return 'new game';
+                }
+
+                function gameClick(event) {
+                    var square = $(event.currentTarget);
+                    var index = square.attr('id');
+                    if (gameStatus === 'In Progress') {
+                        $('#' + index).find('h2').text(playerTurn(gameCounter));
+                        addToBoard(parseInt(index));
+                        gameCounter++;
+                        $.ajax({
+                            type: "POST",
+                            url: '{{ server_url }}:{{ port }}/api/winner',
+                            data: { board: JSON.stringify(gameBoard) },
+                            dataType: 'json',
+                            success: function (obj) {
+                                gameStatus = obj.winner;
+                                if (gameStatus !== 'In Progress') {
+                                    $('.outcome h2').text(gameStatus);
+                                } else {
+                                    computerMove();
+                                }
+                            },
+                            error: function (xhr, status, err) {
+                                console.error(status, err.toString());
+                            }
+                        });
+                        if (gameCounter > 0) {
+                            $('#O').off('click', playerO);
+                        }
                     }
                 }
-            }
 
-            function playerO(event) {
-                $('#X').css({ 'background-color': 'white' });
-                $('#O').css({ 'background-color': 'lightgreen' });
-                computerMove();
-            }
+                function playerO(event) {
+                    $('#X').css({ 'background-color': 'white' });
+                    $('#O').css({ 'background-color': 'lightgreen' });
+                    computerMove();
+                }
 
-        });
+            });
     </script>
 </body>
 

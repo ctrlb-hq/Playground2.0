@@ -7,6 +7,7 @@
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
     "react-run-code": "^0.2.1",
+    "shepherd.js": "^11.1.1",
     "simplebar": "^6.2.5",
     "ws": "^8.13.0"
   }

@@ -6,9 +6,121 @@ body {
     display: flex;
 }
 
+/* Customize Shepherd buttons */
+.shepherd-button {
+    background: #106dfb;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 9px 23px;
+    cursor: pointer;
+    font-size: 14px;
+    /* transition: background-color 0.3s, color 0.3s; */
+}
 
 
 
+/* Customize Shepherd tooltips */
+.shepherd-tooltip-class-1,
+.shepherd-tooltip-class-2 {
+    background-color: #3949ab;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    max-width: 300px;
+    font-size: 14px;
+    animation: fadeInUp 0.3s ease-in-out;
+}
+
+/* Animation for fading in */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Customize Shepherd elements */
+.shepherd-element {
+    background: rgba(255, 255, 255, 0.9);
+    margin: 25px !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* Additional styles for Shepherd header, content, footer */
+.shepherd-header {
+    font-family: 'ADLaM Display', cursive;
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #3949ab;
+    padding: 10px !important;
+}
+
+.shepherd-title{
+    font-size: 20px;
+}
+.shepherd-footer {
+    text-align: right;
+}
+
+.shepherd-text{
+    font-family: 'Signika Negative', sans-serif;
+    font-size: 17px;
+}
+/* Customize Shepherd next button */
+.shepherd-button-primary {
+    background: #106dfb;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 9px 23px;
+    cursor: pointer;
+    font-size: 14px;
+    /* transition: background-color 0.3s, color 0.3s; */
+}
+
+/* .shepherd-button-primary:hover {
+    background-color: #005de8 !important;
+    color: white !important;
+} */
+.shepherd-button:hover {
+    background: #0050c9 !important;
+    color: white !important;
+}
+
+.shepherd-button.shepherd-button-secondary {
+    background: #f1f2f3;
+    color: rgba(0,0,0,.75)
+}
+
+.shepherd-button.shepherd-button-secondary:hover {
+    background: #d6d9db !important;
+    color: rgba(0,0,0,.75) !important;
+}
+.expanded-content {
+    margin-top: 5px;
+    white-space: pre-wrap;
+}
+
+.expand-button {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.expanded {
+    display: block !important;
+}
 .left {
     background-color: #272727;
     position: absolute;
@@ -200,15 +312,15 @@ body {
 
 .gameplay>h2 {
     font-family: 'Lobster', cursive;
-    font-size: 50px;
+    font-size: 5vw;
     text-shadow: 3px 3px 3px #ababab;
-    margin-bottom: 40px;
-    margin-top: 30px;
+    margin-bottom: 25px;
+    margin-top: 20px;
 }
 
 .gameplay>h3 {
     font-family: 'Handjet', cursive;
-    font-size: 20px;
+    font-size: 1.4vw;
     text-shadow: 1px 1px 1px #ababab;
 }
 
@@ -219,7 +331,9 @@ h3 {
 }
 
 h2 {
-    font-size: 1.5rem;
+    font-size: 1.2vw;
+    font-family: 'Noto Sans TC', sans-serif;
+
 }
 
 h3 {
@@ -254,22 +368,24 @@ h3 {
 
 .play_as {
     margin-bottom: 20px;
-    /* display: flex; */
-    /* Add flex display to align tabs horizontally */
-    /* justify-content: center; */
-    /* Center the tabs horizontally */
+    display: flex;
+    justify-content: center;
 }
 
 .play_as td {
+    max-width: 140px;
+    justify-content: center;
     position: relative;
-    left: 25%;
-    width: 30%;
-    margin: 0 5px;
-    /* Add margin to create space between tabs */
+    align-items: center;
+    margin: auto;
+    align-content: center;
+    /* left: 25%; */
+    /* width: 45%; */
+    /* margin: 0 5px; */
     background-color: #f8f6f6;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 5px;
+    padding: 10px 30px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 
@@ -287,7 +403,7 @@ h3 {
 }
 
 .play_as td h2 {
-    padding: 5px;
+    /* padding: 5px; */
     color: #333;
 }
 
@@ -366,20 +482,23 @@ h3 {
 
 .newGame {
     margin-top: 20px;
-    position: absolute;
-    left: 37%;
-    /* margin: auto; */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* left: 37%; */
+    margin: auto;
+    width: 140px;
     /* transform: translateX(-50%); */
     cursor: pointer;
     background-color: #1288b7;
     color: #fff;
     padding: 10px 20px;
-    display: inline-block;
+    /* display: inline-block; */
     border-radius: 5px;
     transition: background-color 0.3s ease;
     animation: slideIn 1s ease;
 }
-
 .newGame:hover {
     background-color: #1833ad;
 }
@@ -394,9 +513,3 @@ h3 {
     }
 }
 
-#loading-message {
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    padding: 20px;
-  }

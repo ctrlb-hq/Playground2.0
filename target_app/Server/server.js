@@ -70,13 +70,9 @@ app.post('/addTracepointEvent', (req, res) => {
   if (!tracepointEventsByPort[port]) {
     tracepointEventsByPort[port] = [];
   }
-  tracepointEventsByPort[port].push(liveMessage);
-  // Store the liveMessage in the liveMessagesByPort object
-  // liveMessagesByPort[port] = liveMessage;
-  // console.log(tracepointEventsByPort[port]);
+  tracepointEventsByPort[port].unshift(liveMessage);
   try {
     res.status(200).json({ message: 'Live message added successfully.' });
-    // console.log("yayy");
   } catch (error) {
     console.error('Error sending response:', error);
   }
@@ -86,9 +82,6 @@ app.post('/addTracepointEvent', (req, res) => {
 app.get('/getTracepointEvents/:port', (req, res) => {
   const port = req.params.port;
   const events = tracepointEventsByPort[port] ;
-  // const liveMessage = liveMessagesByPort[port];
-  // console.log('Request received for port1:', port);
-  // console.log('Events:', events);
   res.status(200).json({ events: events});
 });
 
