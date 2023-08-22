@@ -420,11 +420,11 @@
                                     formattedEvent += '<span style="color: #c57d7d;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.req) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "......." + '</span><br>';
+                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "... + '</span><br>';
                                 }
 
                                 if (event[i].variables && event[i].variables.res) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "......." + '</span><br>';
+                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.input) {
                                     formattedEvent += '<span style="color: #c57d7d;">Input:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
