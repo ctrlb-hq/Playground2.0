@@ -34,7 +34,7 @@ class Database:
                 return
             port = self.db[email].get("port",None)
             del self.db[email]
-            if port:
+            if port and int(port) in self.ports_to_email_map:
                 del self.ports_to_email_map[int(port)]
     
     def set_websocket_for_email(self, email, websocket):

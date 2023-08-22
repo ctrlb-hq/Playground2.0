@@ -32,6 +32,11 @@ username = os.getenv("DB_USERNAME")
 password = os.getenv("DB_PASSWORD")
 cluster_name = os.getenv("DB_CLUSTER")
 dbname = os.getenv("DB_NAME")
+start_port = int(os.getenv("START_PORT"))
+end_port = int(os.getenv("END_PORT"))
+kill_child_process_in_seconds = int(os.getenv("KILL_CHILD_PROCESS_IN_SECONDS"))
+sleep_watcher_for_seconds = int(os.getenv("SLEEP_WATCHER_FOR_SECONDS"))
+
 # Escape the username and password using urllib.parse.quote_plus
 escaped_username = quote_plus(username)
 escaped_password = quote_plus(password)
@@ -92,7 +97,7 @@ def get_public_ip():
 def get_free_port(email):
     """Find and return an available free port."""
     global database
-    for port in range(9000, 10000):
+    for port in range(start_port, end_port):
         if not database.check_port_in_use(port):
             return port
     return None
@@ -122,7 +127,7 @@ def clean_for_email(email, force=False):
         return
     try:
         port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
-        if force or (now - timestamp > 600):  # Check if the port was used for more than an hour
+        if force or (now - timestamp > kill_child_process_in_seconds):  # Check if the port was used for more than an hour
             print(f"Cleaning up port {port} for email {email}")
             try:
                 os.kill(pid, 9)  # Send SIGKILL signal to terminate the process
@@ -146,7 +151,7 @@ def port_watcher():
     while not stop_port_watcher:
         print("Triggering port watcher...")
         cleanup_stale_ports()
-        time.sleep(60)  # Check every 60 seconds
+        time.sleep(sleep_watcher_for_seconds)  # Check every 60 seconds
 
 def check_server_availability(port):
     """Check if the target_app server is responsive."""
