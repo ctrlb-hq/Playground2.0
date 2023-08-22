@@ -126,7 +126,7 @@ body {
     position: absolute;
     left: 0;
     /* bottom: 0; */
-    width: 60%;
+    width: 65%;
     height: 100vh;
     /* Set the height to 100% to fill the available height */
     overflow: hidden;
@@ -168,7 +168,7 @@ body {
     top: 75px;
     overflow-x: hidden;
     transform: translateX(-50%);
-    box-shadow: 0 8px 13px rgba(100, 99, 99, 0.536);
+    /* box-shadow: 0 8px 13px rgba(100, 99, 99, 0.536); */
     padding: 15px;
     z-index: 15;
     border-radius: 10px;
@@ -177,7 +177,7 @@ body {
     align-items: center;
     background-color: rgba(61, 59, 59, 0.941);
     color: #f27979;
-    border: 2px solid rgba(198, 192, 192, 0.725);
+    border: 2px solid #3c3b38;
     border-radius: 5px;
     font-size: 10px;
     font-family: 'Poppins', sans-serif;
@@ -205,18 +205,18 @@ body {
     height: 30px;
     position: absolute;
     display: inline-block;
-    background-color: rgb(191, 234, 99);
+    background-color: #d1cfc7;
     font-size: 15px;
-    font-family: auto;
+    font-family: 'ADLaM Display', cursive;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-weight: bold;
+    /* font-weight: bold; */
 }
 
 .dbox:hover {
-    background-color: rgb(153, 195, 62);
+    background-color: #bbb8ac;
     cursor: pointer;
 }
 
@@ -302,10 +302,11 @@ body {
 }
 
 .right {
-    background: linear-gradient(to bottom right, #ff072e52, #ae22ff47);
+    /* background: linear-gradient(to bottom right, #ff072e52, #ae22ff47); */
+    background: #fff;
     position: absolute;
     right: 0px;
-    width: 40%;
+    width: 35%;
     height: 100vh;
     bottom: 0;
 }
@@ -346,7 +347,7 @@ h3 {
 .outcome,
 .newGame {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 50px;
     animation: fadeIn 1s ease;
 }
 
@@ -422,15 +423,19 @@ h3 {
     height: 100px;
     text-align: center;
     cursor: pointer;
-    background-color: #eeb7f94a;
-    border: 2px solid #960ba4;
+    /* background-color: #eeb7f94a; */
+    background-color: #f3f3f1;
+    /* border: 2px solid #960ba4; */
+    border: 2px solid #21201f;
     color: #39047d;
     transition: background-color 0.3s ease;
 }
 
 .board .square:hover {
-    background-color: #d973ed4a;
-    transform: scale(1.05);
+    background-color: #c6c4b9;
+    border: 2px solid #21201f;
+    /* background-color: #d973ed4a; */
+    /* transform: scale(1.05); */
 }
 
 .board .square.disabled {

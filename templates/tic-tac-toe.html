@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css">
     <!-- Use CDN for CodeMirror JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/material-darker.min.css">
     <!-- Use CDN for language mode (e.g., JavaScript) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
@@ -52,7 +52,7 @@
     </div>
     <div class="right">
         <div class="gameplay">
-            <h2>Tic Tac Toss-up</h2>
+            <h2 style="margin-top:20vh">Tic Tac Toss-up</h2>
             <br>
             <!-- <h3>To start game click on board to play as 'X' or click on 'Player O' to go second.</h3> -->
         </div>
@@ -365,7 +365,7 @@
                         editor = CodeMirror.fromTextArea(document.getElementById("myEditor"), {
                             lineNumbers: true,
                             mode: "javascript",
-                            theme: "monokai", // Set the theme as desi#ee4c4c
+                            theme: "material-darker", // Set the theme as desi#ee4c4c
                             lineWrapping: true, // Enable line wrapping
                             readOnly: true,
                             // gutters: ["CodeMirror-linenumbers", "tracepoint"] // Add the "tracepoint" gutter
