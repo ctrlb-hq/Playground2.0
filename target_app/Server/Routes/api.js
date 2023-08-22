@@ -11,12 +11,6 @@ router.post('/move',
   nextMove
 );
 
-function gameWinner(req,res) {
-	let input = JSON.parse(req.body.board);
-	let output = winner(input);
-  	res.json({winner : output});
-}
-
 function nextMove(req,res) {
 	let input = JSON.parse(req.body.board);
 	let output = move(input);
@@ -47,6 +41,11 @@ function move(board){
 
 }
 
+function gameWinner(req,res) {
+	let input = JSON.parse(req.body.board);
+	let output = winner(input);
+  	res.json({winner : output});
+}
 
 /*
 winner function accepts tic-tac-toe board array as a paramenter and determines if the game has a winner.
