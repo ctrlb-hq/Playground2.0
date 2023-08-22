@@ -19,6 +19,7 @@ import os
 from dotenv import load_dotenv
 from database import Database
 from datetime import datetime
+from portWatcher import clean_for_email, start_port_watcher
 
 
 # Load environment variables from the .env file
@@ -112,46 +113,6 @@ def start_new_target_app(free_port, email):
     process = subprocess.Popen(command, cwd="target_app")
     return process.pid, timestamp
 
-"""
-Cleans the state for this email if the time has expired.
-If force is set as True, forcefully kill without thinking about timestamp.
-
-* kills process
-* cleans DB
-* cleans PORTS_TO_EMAIL_MAP
-"""
-def clean_for_email(email, force=False):
-    now = time.time()
-    info = database.get_data_for_email(email)
-    if not info:
-        return
-    try:
-        port, pid, timestamp = info["port"], info["pid"], info.get("timestamp", 0)
-        if force or (now - timestamp > kill_child_process_in_seconds):  # Check if the port was used for more than an hour
-            print(f"Cleaning up port {port} for email {email}")
-            try:
-                os.kill(pid, 9)  # Send SIGKILL signal to terminate the process
-                print(f"Process with PID {pid} killed")
-            except Exception as e:
-                print(f"Failed to kill process with PID {pid}: {e}")
-            database.delete_email(email)
-    except:
-        pass
-
-
-def cleanup_stale_ports():
-    """Clean up ports for entries older than an hour in the DB."""
-    for email in database.get_all_emails():
-        clean_for_email(email)
-
-def port_watcher():
-    """Periodically check and clean up stale ports."""
-    global database
-    global stop_port_watcher
-    while not stop_port_watcher:
-        cleanup_stale_ports()
-        time.sleep(sleep_watcher_for_seconds)  # Check every 60 seconds
-
 def check_server_availability(port):
     """Check if the target_app server is responsive."""
     if port is None:
@@ -226,8 +187,6 @@ def run_websocket_server():
     print("WebSocket server running...")
     loop.run_until_complete(start_server)
     loop.run_forever()
-
-
 
 async def _serialize_and_send(client_websocket, message_json):
     message_serialized = json.dumps(message_json)
@@ -353,8 +312,7 @@ def sandbox():
     
 if __name__ == "__main__":
     # Start the port watcher as a separate thread
-    watcher_thread = threading.Thread(target=port_watcher, daemon=True)
-    watcher_thread.start()
+    start_port_watcher(database,kill_child_process_in_seconds)
     websocket_thread = threading.Thread(target=run_websocket_server)
     websocket_thread.start()
     try:
