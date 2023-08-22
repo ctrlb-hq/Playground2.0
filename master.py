@@ -18,6 +18,8 @@ import string
 import os
 from dotenv import load_dotenv
 from database import Database
+from datetime import datetime
+
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -56,23 +58,35 @@ database = Database()
 tracepoint_events_by_port = {}  # {port: [live_message1, live_message2, ...]}
 
 def add_email_in_persistent_db(email):
-    entry = {
-        "email": email,
-    }
-    collection.insert_one(entry)
-
-def get_entry(email):
-    return collection.find_one({"email": email})
-
-def delete_entry(email):
-    collection.delete_one({"email": email})
+    # Check if the email exists in the collection
+    existing_entry = collection.find_one({'email': email})
+    current_timestamp = datetime.now()
+    
+    if existing_entry:
+        # Email exists, update the entry
+        new_times = existing_entry['times'] + 1
+        
+        collection.update_one(
+            {'email': email},
+            {'$set': {'times': new_times, 'latest_timestamp': current_timestamp}}
+        )
+        print(f"Updated entry for email: {email}")
+    else:
+        # Email doesn't exist, create a new entry
+        new_entry = {
+            'email': email,
+            'times': 1,
+            'latest_timestamp': current_timestamp  # Set the default timestamp value
+        }
+        collection.insert_one(new_entry)
+        print(f"Created new entry for email: {email}")
 
 def get_public_ip():
     response = requests.get("https://api64.ipify.org?format=json")
     data = response.json()
     ip_address = data["ip"]
     # return "ec2-43-204-221-58.ap-south-1.compute.amazonaws.com"
-    # return "localhost"
+    return "localhost"
     return ip_address
 
 def get_free_port(email):
