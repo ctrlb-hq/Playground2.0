@@ -4,7 +4,6 @@ import time
 def port_watcher(database):
     """Periodically check and clean up stale ports."""
     while True:
-        print("Triggering port watcher...")
         cleanup_stale_ports(database)
         time.sleep(60)  # Check every 60 seconds
 

@@ -53,9 +53,10 @@
     <div class="right">
         <div class="gameplay">
             <h2>Tic Tac Toss-up</h2>
-            <h3>To start game click on board to play as 'X' or click on 'Player O' to go second.</h3>
+            <br>
+            <!-- <h3>To start game click on board to play as 'X' or click on 'Player O' to go second.</h3> -->
         </div>
-        <table class="play_as">
+        <table style="display: None;" class="play_as">
             <tr>
                 <td class="player" id="X">
                     <h2>Player X</h2>
@@ -133,7 +134,7 @@
             // Step 1: Welcome
             tour.addStep({
                 title: 'Welcome to CtrlB Playground ! 👋🏼',
-                text: `Hello Folks, this is CtrlB's Playground. Let's have a tour of the same to understand it better, follow the steps`,
+                text: `You can press X to skip these instructions. On the right we have a tic-tac-toe game running live. Let's see how we can use CtrlB super debugger to inspect arbitrary variables during runtime.`,
                 buttons: [
                     {
                         action() {
@@ -148,7 +149,7 @@
             // Step 2: Making a Move
             tour.addStep({
                 title: 'Make your first Move ! 👾',
-                text: 'Click on the Tic-Tac-Toe board to make a move as "X" or "O"',
+                text: 'Click on the Tic-Tac-Toe board to make a move as "X".',
                 attachTo: {
                     element: '.board',
                     on: 'right'
@@ -174,7 +175,7 @@
             // Step 3: Code for the Game
             tour.addStep({
                 title: 'Logic behind the Game 💡',
-                text: 'Here is the code for the game, all the functions have been explained with their impact :)',
+                text: '/move endpoint on line 10 gets triggered when you click on the board which further calls nextMove() [line 20] and then move() [line 29].',
                 attachTo: {
                     element: '.left',
                     on: 'right'
@@ -200,7 +201,7 @@
             // Step 4: Adding a Tracepoint
             tour.addStep({
                 title: `Let's add a Tracepoint now? 🔴`,
-                text: 'Click on any line number to add a tracepoint which would be very useful for debugging',
+                text: 'Click on line number 30 to add a tracepoint. Whenever this function is called again, we will see the value contained in board variable.',
                 attachTo: {
                     element: '.cm-tracepoint-gutter',
                     on: 'right'
@@ -226,7 +227,7 @@
             // Step 5: Making a Move Again
             tour.addStep({
                 title: 'Make a Move Again 🎯',
-                text: 'Click on the Tic Tac Toe board to make another move as "X" or "O" and observe the snapshot for the tracepoint you added',
+                text: 'Click on the Tic Tac Toe board to make another move.',
                 attachTo: {
                     element: '.board',
                     on: 'right'
@@ -252,7 +253,7 @@
             // Step 6: Viewing a Snapshot
             tour.addStep({
                 title: `Now Let's view the Snapshot 🔎`,
-                text: 'Click on this button to view the snapshot that has been taken for the Line numbers ',
+                text: 'Click on this button to view the captured snapshot.',
                 attachTo: {
                     element: '.dbox',
                     on: 'bottom'
