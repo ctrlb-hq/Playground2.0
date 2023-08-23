@@ -5,14 +5,16 @@ import asyncio
 import json
 from datetime import datetime
 import pytz
+import os
 import secrets
+from dotenv import load_dotenv
 import string
 from datetime import datetime
-
+# Load environment variables from the .env file
+load_dotenv()
 
 CODE_TO_DEBUG = "https://api.github.com/repos/abc/aaa/contents/Server/Routes/api.js"
 database = None 
-get_public_ip= None
 
 def get_time():
     current_time = datetime.now(pytz.utc)
@@ -53,8 +55,10 @@ async def websocket_handler(websocket, path):
             # Send the live_message to the connected client
             print("live_message",live_message)
             def send_live_message_to_server_js(port, live_message):
-                url = f'http://{get_public_ip()}:{port}/addTracepointEvent'
-                # print(url)
+                if os.getenv("ENV")=="DEV":
+                    url = f"{os.getenv('TARGET_APP_BASE_ADDRESS')}:{port}/addTracepointEvent"
+                if os.getenv("ENV")=="PROD":
+                    url = ""
                 headers = {'Content-Type': 'application/json'}
                 data = {'port': port, 'live_message': live_message}
                 response = requests.post(url, json=data, headers=headers)
@@ -131,10 +135,8 @@ async def sendRemoveTracepoint(email, line_no):
     await _serialize_and_send(client_websocket, message_json)
     database.delete_lineno_from_tracepointid_map_for_email(email, line_no)
 
-def websocket(database_obj, ip_add):
+def websocket(database_obj):
     global database
-    global get_public_ip
     database = database_obj
-    get_public_ip=ip_add
     websocket_thread = threading.Thread(target=run_websocket_server)
     websocket_thread.start()

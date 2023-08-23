@@ -359,7 +359,7 @@
             function fetchApiCode() {
                 $.ajax({
                     type: "GET",
-                    url: '{{ server_url }}:{{ port }}/api/js', // Replace with the correct URL to fetch api.js
+                    url: '{{ target_app_server_url }}/api/js', // Replace with the correct URL to fetch api.js
                     dataType: 'text',
                     success: function (data) {
                         // Create a new CodeMirror instance and set the content of api.js to it
@@ -402,7 +402,7 @@
             function fetchAndDisplayTracepointEvents(port) {
                 $.ajax({
                     type: "GET",
-                    url: `{{ server_url }}:${port}/getTracepointEvents/${port}`,
+                    url: `{{ target_app_server_url }}/getTracepointEvents/${port}`,
                     success: function (response) {
                         console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
@@ -530,7 +530,7 @@
                 function computerMove() {
                     $.ajax({
                         type: "POST",
-                        url: '{{ server_url }}:{{ port }}/api/move',
+                        url: '{{ target_app_server_url }}/api/move',
                         data: { board: JSON.stringify(gameBoard) },
                         dataType: 'json',
                         success: function (obj) {
@@ -550,7 +550,7 @@
                 function winner() {
                     $.ajax({
                         type: "POST",
-                        url: '{{ server_url }}:{{ port }}/api/winner',
+                        url: '{{ target_app_server_url }}/api/winner',
                         data: { board: JSON.stringify(gameBoard) },
                         dataType: 'json',
                         success: function (obj) {
@@ -587,7 +587,7 @@
                         gameCounter++;
                         $.ajax({
                             type: "POST",
-                            url: '{{ server_url }}:{{ port }}/api/winner',
+                            url: '{{ target_app_server_url }}/api/winner',
                             data: { board: JSON.stringify(gameBoard) },
                             dataType: 'json',
                             success: function (obj) {

@@ -79,12 +79,12 @@ def add_email_in_persistent_db(email):
         collection.insert_one(new_entry)
         print(f"Created new entry for email: {email}")
 
-def get_public_ip():
-    response = requests.get("https://api64.ipify.org?format=json")
-    data = response.json()
-    ip_address = data["ip"]
-    # return "localhost"
-    return ip_address
+# def get_public_ip():
+#     response = requests.get("https://api64.ipify.org?format=json")
+#     data = response.json()
+#     ip_address = data["ip"]
+#     # return "localhost"
+#     return ip_address
 
 def get_free_port(email):
     """Find and return an available free port."""
@@ -175,16 +175,19 @@ def index():
 def sandbox():
     email = request.args.get("email")
     port = database.get_port_for_email(email)
+    if os.getenv("ENV")=="DEV":
+        target_app_server_url = f"{os.getenv('TARGET_APP_BASE_ADDRESS')}:{port}"
+    if os.getenv("ENV")=="PROD":
+        target_app_server_url = ""
     if port and check_server_availability(port):
-        return render_template("tic-tac-toe.html", port=port, server_url=f"http://{get_public_ip()}")
+        return render_template("tic-tac-toe.html", port=port, target_app_server_url=target_app_server_url)
     else:
         return f"This sandbox has been deleted. Please visit the homepage again.", 500
     
 if __name__ == "__main__":
     # Start the port watcher as a separate thread
     start_port_watcher(database,kill_child_process_in_seconds)
-    ip_add=get_public_ip
-    websocket(database,ip_add)
+    websocket(database)
     try:
         app.run(debug=False, port=5001, host="0.0.0.0")
     except KeyboardInterrupt:
