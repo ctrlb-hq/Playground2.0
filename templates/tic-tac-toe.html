@@ -42,8 +42,8 @@
             <div class="button-container">
                 <button id="openDialogButton" class="collapsible dbox">View Snapshot</button>
                 <div class="content">
-                    <div class="dialog-box initial-hidden">
-                        
+                    <div class="dialog-box">
+
                     </div>
                 </div>
             </div>
@@ -58,18 +58,8 @@
         <div class="gameplay">
             <h2>Tic Tac Toss-up</h2>
             <br>
-            <!-- <h3>To start game click on board to play as 'X' or click on 'Player O' to go second.</h3> -->
         </div>
-        <!-- <table style="display: None;" class="play_as">
-            <tr>
-                <td class="player" id="X">
-                    <h2>Player X</h2>
-                </td>
-                <td class="player" id="O">
-                    <h2>Player O</h2>
-                </td>
-            </tr>
-        </table> -->
+
 
         <table class="board">
             <tr>
@@ -321,7 +311,6 @@
             }
             // Function to add a tracepoint marker on click
             function addTracepointMarker(lineNumber) {
-                // lineNumber -= 1;
                 var marker = document.createElement("div");
                 marker.classList.add("line-marker");
                 var cm = editor; // Get the CodeMirror instance
@@ -335,7 +324,6 @@
 
             // Function to remove a tracepoint marker on click
             function removeTracepointMarker(lineNumber) {
-                // lineNumber -= 1;
                 var cm = editor; // Get the CodeMirror instance
                 var gutters = cm.getOption("gutters"); // Get the list of gutters
                 var gutterIndex = gutters.indexOf("tracepoint"); // Find the index of the "tracepoint" gutter
@@ -405,27 +393,27 @@
                             var formattedEvent = '';
                             for (var i = 0; i < event.length; i++) {
 
-                                formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #eafac2;">' + event[i].timestamp + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #eafac2;">' + event[i].fileName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #eafac2;">' + event[i].methodName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + event[i].lineNo + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Variables:</span> </span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Timestamp:</span> <span style="color: #eafac2;">' + event[i].timestamp + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">File Name:</span> <span style="color: #eafac2;">' + event[i].fileName + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Method Name:</span> <span style="color: #eafac2;">' + event[i].methodName + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Line Number:</span> <span style="color: #eafac2;">' + event[i].lineNo + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Variables:</span> </span><br>';
                                 console.log(event[i].variables);
                                 if (event[i].variables && event[i].variables.board) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #69a0f2;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.req) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
+                                    formattedEvent += '<span style="color: #69a0f2;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
                                 }
 
                                 if (event[i].variables && event[i].variables.res) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
+                                    formattedEvent += '<span style="color: #69a0f2;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.input) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Input:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #69a0f2;">Input:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.output) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Output:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #69a0f2;">Output:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
                                 }
 
                                 formattedEvent += '<br>';
@@ -445,7 +433,6 @@
             function updateDialogBoxContent() {
                 if (dialogBoxVisible) {
                     fetchAndDisplayTracepointEvents(port);
-                    // $('.dialog-box').show();
                 }
 
             }
@@ -461,36 +448,26 @@
             var i;
 
             for (i = 0; i < coll.length; i++) {
-    coll[i].addEventListener("click", function () {
-        this.classList.toggle("active");
-        var content = this.nextElementSibling;
-        var snapshotContent = content.querySelector(".dialog-box"); // Adjusted selector
-        
-        // Check if the initial-hidden class is present
-        if (snapshotContent.classList.contains("initial-hidden")) {
-            // Remove the initial-hidden class to show the dialog box
-            snapshotContent.classList.remove("initial-hidden");
-            // Continue with other functionality (fetch data, start interval, etc.)
-            content.style.maxHeight = content.scrollHeight + "px";
-            dialogBoxVisible = true;
-            fetchAndDisplayTracepointEvents();
-            startInterval();
-        } else {
-            // Toggle max height and other functionality
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-                snapshotContent.style.display = "none";
-                stopInterval();
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                snapshotContent.style.display = "block";
-                dialogBoxVisible = true;
-                fetchAndDisplayTracepointEvents();
-                startInterval();
+                coll[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    var snapshotContent = content.querySelector(".dialog-box");
+
+                    // Check if the dialog box is active
+                    if (snapshotContent.classList.contains("active")) {
+                        // Hide the dialog box
+                        snapshotContent.classList.remove("active");
+                        stopInterval();
+                    } else {
+                        // Show the dialog box
+                        snapshotContent.classList.add("active");
+                        dialogBoxVisible = true;
+                        fetchAndDisplayTracepointEvents();
+                        startInterval();
+                    }
+                });
             }
-        }
-    });
-}
+            // }
 
             var gameBoard = ['', '', '', '', '', '', '', '', ''];
             var gameCounter = 0;
