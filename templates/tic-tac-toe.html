@@ -412,30 +412,30 @@
                             var formattedEvent = '';
                             for (var i = 0; i < event.length; i++) {
 
-                                formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #eafac2;">' + event[i].timestamp + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #eafac2;">' + event[i].fileName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #eafac2;">' + event[i].methodName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #eafac2;">' + event[i].lineNo + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #f5f3ef;">' + event[i].timestamp + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #f5f3ef;">' + event[i].fileName + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #f5f3ef;">' + event[i].methodName + '</span><br>';
+                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #f5f3ef;">' + event[i].lineNo + '</span><br>';
                                 formattedEvent += '<span style="color: #f27979;">Variables:</span> </span><br>';
                                 console.log(event[i].variables);
                                 if (event[i].variables && event[i].variables.board) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Board:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">Board:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.req) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Req:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">Req:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
                                 }
 
                                 if (event[i].variables && event[i].variables.res) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Res:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">Res:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.input) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Input:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">Input:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.output) {
-                                    formattedEvent += '<span style="color: #c57d7d;">Output:</span> <span style="color: #eafac2;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">Output:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
                                 }
 
-                                formattedEvent += '<br>';
+                                formattedEvent += '<br><hr><br>';
                             }
                             dialogBox.innerHTML = formattedEvent;
                             dialogBox.style.display = "block";
