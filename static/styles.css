@@ -47,8 +47,8 @@ body {
 
 /* Customize Shepherd elements */
 .shepherd-element {
-    background: rgba(255, 255, 255, 0.9);
-    margin: 25px !important;
+    background: rgb(203 224 231 / 92%);
+    margin: 27px !important;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 10px;
@@ -64,6 +64,14 @@ body {
     margin-bottom: 10px;
     color: #3949ab;
     padding: 10px !important;
+}
+
+.shepherd-has-title .shepherd-content .shepherd-header {
+    background: rgb(216 235 242 / 62%) !important;
+}
+
+.shepherd-arrow:before {
+    background: rgb(203 224 231 / 92%) !important;
 }
 
 .shepherd-title{
@@ -231,15 +239,12 @@ body {
 /* Add this CSS for CodeMirror editor */
 .CodeMirror {
     height: 90vh !important;
-    border-left: 1px solid #ccc !important;
-    /* border: #f8f6f6 !important; */
-    /* bottom: 0 !important; */
 
 }
 
 .CodeMirror-gutters {
     /* cursor: pointer; */
-    border-right: 1px solid #ccc !important;
+    border-right: 0.5px solid #9b9b9b !important
     /* Add the right border to separate line numbers and code */
 }
 
@@ -316,14 +321,14 @@ body {
     font-size: 5vw;
     text-shadow: 3px 3px 3px #ababab;
     margin-bottom: 25px;
-    margin-top: 20px;
+    margin-top: 15vh;
 }
 
-.gameplay>h3 {
+/* .gameplay>h3 {
     font-family: 'Handjet', cursive;
     font-size: 1.4vw;
     text-shadow: 1px 1px 1px #ababab;
-}
+} */
 
 h2,
 h3 {
@@ -342,7 +347,6 @@ h3 {
 }
 
 .gameplay,
-.play_as,
 .board,
 .outcome,
 .newGame {
@@ -367,22 +371,19 @@ h3 {
     color: #333;
 }
 
-.play_as {
+/* .play_as {
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
-}
+} */
 
-.play_as td {
+/* .play_as td {
     max-width: 140px;
     justify-content: center;
     position: relative;
     align-items: center;
     margin: auto;
     align-content: center;
-    /* left: 25%; */
-    /* width: 45%; */
-    /* margin: 0 5px; */
     background-color: #f8f6f6;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -390,23 +391,20 @@ h3 {
     cursor: pointer;
     transition: background-color 0.3s ease;
 
-}
+} */
 
-.play_as td.selected {
+/* .play_as td.selected {
     background-color: #00c853;
-    /* Change background color of the selected tab */
     color: white;
-    /* Change text color to white for better visibility */
-}
+} */
 
-.play_as td:hover {
+/* .play_as td:hover {
     background-color: #b9b9b9;
-}
+} */
 
-.play_as td h2 {
-    /* padding: 5px; */
+/* .play_as td h2 {
     color: #333;
-}
+} */
 
 .board {
     margin: auto;
@@ -427,8 +425,12 @@ h3 {
     background-color: #f3f3f1;
     /* border: 2px solid #960ba4; */
     border: 2px solid #21201f;
-    color: #39047d;
+    color: #000000;
     transition: background-color 0.3s ease;
+}
+
+.board h2{
+    font-size: 1.6vw;
 }
 
 .board .square:hover {
@@ -486,13 +488,12 @@ h3 {
 }
 
 .newGame {
-    margin-top: 20px;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     /* left: 37%; */
-    margin: auto;
+    margin: 6vh auto;
     width: 140px;
     /* transform: translateX(-50%); */
     cursor: pointer;
