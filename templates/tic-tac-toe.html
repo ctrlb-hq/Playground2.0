@@ -419,20 +419,35 @@
                                 formattedEvent += '<span style="color: #f27979;">Variables:</span> </span><br>';
                                 console.log(event[i].variables);
                                 if (event[i].variables && event[i].variables.board) {
-                                    formattedEvent += '<span style="color: #0892d0;">Board:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">board:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.req) {
-                                    formattedEvent += '<span style="color: #0892d0;">Req:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">req:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
                                 }
 
                                 if (event[i].variables && event[i].variables.res) {
-                                    formattedEvent += '<span style="color: #0892d0;">Res:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">res:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.input) {
-                                    formattedEvent += '<span style="color: #0892d0;">Input:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">input:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
                                 }
                                 if (event[i].variables && event[i].variables.output) {
-                                    formattedEvent += '<span style="color: #0892d0;">Output:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
+                                    formattedEvent += '<span style="color: #0892d0;">output:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
+                                }
+                                if (event[i].variables && event[i].variables.counter) {
+                                    formattedEvent += '<span style="color: #0892d0;">counter:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.counter['@value']) + '</span><br>';
+                                }
+                                if (event[i].variables && event[i].variables.winningCombinations) {
+                                    formattedEvent += '<span style="color: #0892d0;">winningCombinations:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningCombinations['@value']).substring(0, 132) + "..." + '</span><br>';
+                                }
+                                if (event[i].variables && event[i].variables.winningIndex) {
+                                    formattedEvent += '<span style="color: #0892d0;">winningIndex:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningIndex['@value']) + '</span><br>';
+                                }
+                                if (event[i].variables && event[i].variables.move) {
+                                    formattedEvent += '<span style="color: #0892d0;">move:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.move['@value']) + '</span><br>';
+                                }
+                                if (event[i].variables && event[i].variables.winner) {
+                                    formattedEvent += '<span style="color: #0892d0;">winner:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winner['@value']) + '</span><br>';
                                 }
 
                                 formattedEvent += '<br><hr><br>';
