@@ -178,7 +178,7 @@ def sandbox():
     if os.getenv("ENV")=="DEV":
         target_app_server_url = f"{os.getenv('TARGET_APP_BASE_ADDRESS')}:{port}"
     if os.getenv("ENV")=="PROD":
-        target_app_server_url = ""
+        target_app_server_url = f"{os.getenv('TARGET_APP_BASE_ADDRESS')}/{port}"
     if port and check_server_availability(port):
         return render_template("tic-tac-toe.html", port=port, target_app_server_url=target_app_server_url)
     else:

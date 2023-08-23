@@ -55,10 +55,7 @@ async def websocket_handler(websocket, path):
             # Send the live_message to the connected client
             print("live_message",live_message)
             def send_live_message_to_server_js(port, live_message):
-                if os.getenv("ENV")=="DEV":
-                    url = f"{os.getenv('TARGET_APP_BASE_ADDRESS')}:{port}/addTracepointEvent"
-                if os.getenv("ENV")=="PROD":
-                    url = ""
+                url = f"http://localhost:{port}/addTracepointEvent"
                 headers = {'Content-Type': 'application/json'}
                 data = {'port': port, 'live_message': live_message}
                 response = requests.post(url, json=data, headers=headers)
