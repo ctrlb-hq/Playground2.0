@@ -6,7 +6,9 @@ heimdall.start({
   apiKey: "bla",
   brokerPort: "8094",
   brokerHost: "ws://localhost",
-  applicationName: process.argv[2] || 8000
+  applicationName: process.argv[2] || 8000,
+  maxProperties: 20,
+  maxDepth: 2,
 });
 
 const WebSocket = require('ws');
