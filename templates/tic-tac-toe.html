@@ -23,7 +23,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css">
     <!-- Use CDN for CodeMirror JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/material-darker.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/material-darker.min.css">
     <!-- Use CDN for language mode (e.g., JavaScript) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
@@ -39,9 +40,11 @@
             <img src={{ url_for('static', filename='img/coding.png' ) }} alt="icon" class="img">
             <h1 class="header">CtrlB</h1>
             <div class="button-container">
-                <button id="openDialogButton" class="dbox">View Snapshot</button>
-                <div class="dialog-box" style="display: none;">
-                    <!-- <button id="closeDialogButton" class="close-dbox">Close</button> -->
+                <button id="openDialogButton" class="collapsible dbox">View Snapshot</button>
+                <div class="content">
+                    <div class="dialog-box">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -55,18 +58,8 @@
         <div class="gameplay">
             <h2>Tic Tac Toss-up</h2>
             <br>
-            <!-- <h3>To start game click on board to play as 'X' or click on 'Player O' to go second.</h3> -->
         </div>
-        <!-- <table style="display: None;" class="play_as">
-            <tr>
-                <td class="player" id="X">
-                    <h2>Player X</h2>
-                </td>
-                <td class="player" id="O">
-                    <h2>Player O</h2>
-                </td>
-            </tr>
-        </table> -->
+
 
         <table class="board">
             <tr>
@@ -318,7 +311,6 @@
             }
             // Function to add a tracepoint marker on click
             function addTracepointMarker(lineNumber) {
-                // lineNumber -= 1;
                 var marker = document.createElement("div");
                 marker.classList.add("line-marker");
                 var cm = editor; // Get the CodeMirror instance
@@ -332,7 +324,6 @@
 
             // Function to remove a tracepoint marker on click
             function removeTracepointMarker(lineNumber) {
-                // lineNumber -= 1;
                 var cm = editor; // Get the CodeMirror instance
                 var gutters = cm.getOption("gutters"); // Get the list of gutters
                 var gutterIndex = gutters.indexOf("tracepoint"); // Find the index of the "tracepoint" gutter
@@ -389,76 +380,57 @@
             fetchApiCode();
 
 
-
-            $(document).on("click", ".expand-button", function () {
-                var expandableContent = $(this).siblings(".expanded-content");
-                expandableContent.slideToggle();
-                if (expandableContent.is(":visible")) {
-                    $(this).text("Hide");
-                } else {
-                    $(this).text("...");
-                }
-            });
             function fetchAndDisplayTracepointEvents(port) {
                 $.ajax({
                     type: "GET",
                     url: `{{ target_app_server_url }}/getTracepointEvents/${port}`,
                     success: function (response) {
-                        console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
                         if (response && response.events) {
                             event = response.events;
-                            console.log("here is the event", response, event);
                             var formattedEvent = '';
                             for (var i = 0; i < event.length; i++) {
-
-                                formattedEvent += '<span style="color: #f27979;">Timestamp:</span> <span style="color: #f5f3ef;">' + event[i].timestamp + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">File Name:</span> <span style="color: #f5f3ef;">' + event[i].fileName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Method Name:</span> <span style="color: #f5f3ef;">' + event[i].methodName + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Line Number:</span> <span style="color: #f5f3ef;">' + event[i].lineNo + '</span><br>';
-                                formattedEvent += '<span style="color: #f27979;">Variables:</span> </span><br>';
-                                console.log(event[i].variables);
-                                if (event[i].variables && event[i].variables.board) {
-                                    formattedEvent += '<span style="color: #0892d0;">board:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Timestamp:</span> <span style="color: #f5f3ef;">' + event[i].timestamp + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">File Name:</span> <span style="color: #f5f3ef;">' + event[i].fileName + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Method Name:</span> <span style="color: #f5f3ef;">' + event[i].methodName + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Line Number:</span> <span style="color: #f5f3ef;">' + event[i].lineNo + '</span><br>';
+                                formattedEvent += '<span style="color: #ff7d7d;">Variables:</span> </span><br>';
+                                if (event[i].variables && event[i].variables.board && event[i].variables.board['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">board:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.req) {
-                                    formattedEvent += '<span style="color: #0892d0;">req:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
+                                if (event[i].variables && event[i].variables.req && event[i].variables.req['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">req:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
                                 }
 
-                                if (event[i].variables && event[i].variables.res) {
-                                    formattedEvent += '<span style="color: #0892d0;">res:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
+                                if (event[i].variables && event[i].variables.res && event[i].variables.res['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">res:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.input) {
-                                    formattedEvent += '<span style="color: #0892d0;">input:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
+                                if (event[i].variables && event[i].variables.input && event[i].variables.input['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">input:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.output) {
-                                    formattedEvent += '<span style="color: #0892d0;">output:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
+                                if (event[i].variables && event[i].variables.output && event[i].variables.output['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">output:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.counter) {
-                                    formattedEvent += '<span style="color: #0892d0;">counter:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.counter['@value']) + '</span><br>';
+                                if (event[i].variables && event[i].variables.counter && event[i].variables.counter['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">counter:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.counter['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.winningCombinations) {
-                                    formattedEvent += '<span style="color: #0892d0;">winningCombinations:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningCombinations['@value']).substring(0, 132) + "..." + '</span><br>';
+                                if (event[i].variables && event[i].variables.winningCombinations && event[i].variables.winningCombinations['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">winningCombinations:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningCombinations['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.winningIndex) {
-                                    formattedEvent += '<span style="color: #0892d0;">winningIndex:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningIndex['@value']) + '</span><br>';
+                                if (event[i].variables && event[i].variables.winningIndex && event[i].variables.winningIndex['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">winningIndex:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningIndex['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.move) {
-                                    formattedEvent += '<span style="color: #0892d0;">move:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.move['@value']) + '</span><br>';
+                                if (event[i].variables && event[i].variables.move && event[i].variables.move['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">move:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.move['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.winner) {
-                                    formattedEvent += '<span style="color: #0892d0;">winner:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winner['@value']) + '</span><br>';
+                                if (event[i].variables && event[i].variables.winner && event[i].variables.winner['@type']!='undefined') {
+                                    formattedEvent += '<span style="color: #69a0f2;">winner:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winner['@value']) + '</span><br>';
                                 }
 
                                 formattedEvent += '<br><hr><br>';
                             }
                             dialogBox.innerHTML = formattedEvent;
                             dialogBox.style.display = "block";
-                            // if (!dialogBoxVisible) {
-                            //     $('.dialog-box').show();
-                            //     startInterval(); // Start the interval when opening the dialog
-                            //     dialogBoxVisible = true;
-                            // }
                         }
                     },
                     error: function (xhr, status, err) {
@@ -467,28 +439,13 @@
                 });
             }
             // Function to start the interval
-            
+
             var intervalId = null; // Declare intervalId globally
             function updateDialogBoxContent() {
-                // var dialogBox = document.querySelector('.dialog-box');
-                // var isDialogBoxVisible = dialogBox.style.display === "block";
                 if (dialogBoxVisible) {
                     fetchAndDisplayTracepointEvents(port);
-                    $('.dialog-box').show();
                 }
-                // fetchAndDisplayTracepointEvents(port);
-                // $('.dialog-box').show();
-                // startInterval();
-                // if (!isDialogBoxVisible) {
-                //     dialogBox.style.display = "block";
-                //     startInterval(); // Start the interval when opening the dialog
-                // }
-                // if (dialogBoxVisible) {
-                // fetchAndDisplayTracepointEvents(port);
-                // $('.dialog-box').show();
-                // startInterval();
-                // dialogBoxVisible = !dialogBoxVisible;
-                // }
+
             }
             function startInterval() {
                 intervalId = setInterval(updateDialogBoxContent, 1000); // 5000 milliseconds = 5 seconds
@@ -498,123 +455,135 @@
                 clearInterval(intervalId);
                 intervalId = null;
             }
-                $('#openDialogButton').on('click', function () {
-                    var dialogBox = $('.dialog-box');
-                    if (dialogBoxVisible) {
-                        dialogBox.hide();
-                        stopInterval(); // Stop the interval when closing the dialog
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+
+            for (i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function () {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    var snapshotContent = content.querySelector(".dialog-box");
+
+                    // Check if the dialog box is active
+                    if (snapshotContent.classList.contains("active")) {
+                        // Hide the dialog box
+                        snapshotContent.classList.remove("active");
+                        stopInterval();
                     } else {
-                        dialogBox.show();
-                        startInterval(); // Start the interval when opening the dialog
-                        fetchAndDisplayTracepointEvents(port);
+                        // Show the dialog box
+                        snapshotContent.classList.add("active");
+                        dialogBoxVisible = true;
+                        fetchAndDisplayTracepointEvents();
+                        startInterval();
                     }
-                    dialogBoxVisible = !dialogBoxVisible;
                 });
+            }
+            // }
 
-                var gameBoard = ['', '', '', '', '', '', '', '', ''];
-                var gameCounter = 0;
-                var gameStatus = 'In Progress'
+            var gameBoard = ['', '', '', '', '', '', '', '', ''];
+            var gameCounter = 0;
+            var gameStatus = 'In Progress'
 
-                $('.square').one('click', gameClick);
-                $('.newGame h2').on('click', newGame);
-                $('#O').one('click', playerO);
+            $('.square').one('click', gameClick);
+            $('.newGame h2').on('click', newGame);
+            $('#O').one('click', playerO);
 
-                function playerTurn(count) {
-                    return count % 2 === 0 ? 'X' : 'O'
-                }
+            function playerTurn(count) {
+                return count % 2 === 0 ? 'X' : 'O'
+            }
 
-                function addToBoard(index) {
-                    return gameBoard[index] = playerTurn(gameCounter);
-                }
+            function addToBoard(index) {
+                return gameBoard[index] = playerTurn(gameCounter);
+            }
 
-                function computerMove() {
-                    $.ajax({
-                        type: "POST",
+            function computerMove() {
+                $.ajax({
+                    type: "POST",
                         url: '{{ target_app_server_url }}/api/move',
-                        data: { board: JSON.stringify(gameBoard) },
-                        dataType: 'json',
-                        success: function (obj) {
-                            var index = obj.nextMove;
-                            addToBoard(index);
-                            $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
-                            $('#' + index.toString()).unbind('click');
-                            gameCounter++;
-                            winner();
-                        },
-                        error: function (xhr, status, err) {
-                            console.error(status, err.toString());
-                        }
-                    });
-                }
+                    data: { board: JSON.stringify(gameBoard) },
+                    dataType: 'json',
+                    success: function (obj) {
+                        var index = obj.nextMove;
+                        addToBoard(index);
+                        $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
+                        $('#' + index.toString()).unbind('click');
+                        gameCounter++;
+                        winner();
+                    },
+                    error: function (xhr, status, err) {
+                        console.error(status, err.toString());
+                    }
+                });
+            }
 
-                function winner() {
+            function winner() {
+                $.ajax({
+                    type: "POST",
+                        url: '{{ target_app_server_url }}/api/winner',
+                    data: { board: JSON.stringify(gameBoard) },
+                    dataType: 'json',
+                    success: function (obj) {
+                        gameStatus = obj.winner;
+                        if (gameStatus !== 'In Progress') {
+                            $('.outcome h2').text(gameStatus);
+                        }
+                    },
+                    error: function (xhr, status, err) {
+                        console.error(status, err.toString());
+                    }
+                });
+            }
+
+            function newGame() {
+                gameBoard = ['', '', '', '', '', '', '', '', ''];
+                gameCounter = 0;
+                gameStatus = 'In Progress';
+                $('.square').unbind('click').one('click', gameClick);
+                $('#O').unbind('click').one('click', playerO);
+                $('.square h2').empty();
+                $('.outcome h2').empty();
+                $('#X').css({ 'background-color': 'lightgreen' });
+                $('#O').css({ 'background-color': 'white' });
+                return 'new game';
+            }
+
+            function gameClick(event) {
+                var square = $(event.currentTarget);
+                var index = square.attr('id');
+                if (gameStatus === 'In Progress') {
+                    $('#' + index).find('h2').text(playerTurn(gameCounter));
+                    addToBoard(parseInt(index));
+                    gameCounter++;
                     $.ajax({
                         type: "POST",
-                        url: '{{ target_app_server_url }}/api/winner',
+                            url: '{{ target_app_server_url }}/api/winner',
                         data: { board: JSON.stringify(gameBoard) },
                         dataType: 'json',
                         success: function (obj) {
                             gameStatus = obj.winner;
                             if (gameStatus !== 'In Progress') {
                                 $('.outcome h2').text(gameStatus);
+                            } else {
+                                computerMove();
                             }
                         },
                         error: function (xhr, status, err) {
                             console.error(status, err.toString());
                         }
                     });
-                }
-
-                function newGame() {
-                    gameBoard = ['', '', '', '', '', '', '', '', ''];
-                    gameCounter = 0;
-                    gameStatus = 'In Progress';
-                    $('.square').unbind('click').one('click', gameClick);
-                    $('#O').unbind('click').one('click', playerO);
-                    $('.square h2').empty();
-                    $('.outcome h2').empty();
-                    $('#X').css({ 'background-color': 'lightgreen' });
-                    $('#O').css({ 'background-color': 'white' });
-                    return 'new game';
-                }
-
-                function gameClick(event) {
-                    var square = $(event.currentTarget);
-                    var index = square.attr('id');
-                    if (gameStatus === 'In Progress') {
-                        $('#' + index).find('h2').text(playerTurn(gameCounter));
-                        addToBoard(parseInt(index));
-                        gameCounter++;
-                        $.ajax({
-                            type: "POST",
-                            url: '{{ target_app_server_url }}/api/winner',
-                            data: { board: JSON.stringify(gameBoard) },
-                            dataType: 'json',
-                            success: function (obj) {
-                                gameStatus = obj.winner;
-                                if (gameStatus !== 'In Progress') {
-                                    $('.outcome h2').text(gameStatus);
-                                } else {
-                                    computerMove();
-                                }
-                            },
-                            error: function (xhr, status, err) {
-                                console.error(status, err.toString());
-                            }
-                        });
-                        if (gameCounter > 0) {
-                            $('#O').off('click', playerO);
-                        }
+                    if (gameCounter > 0) {
+                        $('#O').off('click', playerO);
                     }
                 }
+            }
 
-                function playerO(event) {
-                    $('#X').css({ 'background-color': 'white' });
-                    $('#O').css({ 'background-color': 'lightgreen' });
-                    computerMove();
-                }
+            function playerO(event) {
+                $('#X').css({ 'background-color': 'white' });
+                $('#O').css({ 'background-color': 'lightgreen' });
+                computerMove();
+            }
 
-            });
+        });
     </script>
 </body>
 

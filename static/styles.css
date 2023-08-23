@@ -166,9 +166,12 @@ body {
     font-family: "Audiowide", sans-serif;
 }
 
-
+/* .content{
+    display: block;
+} */
 
 .dialog-box {
+    display: none;
     position: fixed;
     width: 330px;
     height: 270px;
@@ -176,20 +179,30 @@ body {
     top: 75px;
     overflow-x: hidden;
     transform: translateX(-50%);
-    /* box-shadow: 0 8px 13px rgba(100, 99, 99, 0.536); */
-    padding: 15px;
+    box-shadow: 0 5px 10px rgba(69, 69, 69, 0.536);
+    padding: 0px 15px;
     z-index: 15;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(61, 59, 59, 0.941);
-    color: #f27979;
-    border: 2px solid #3c3b38;
+    background-color: rgba(61, 59, 59, 0.941) !important;
+    color: #ff7d7d;
     border-radius: 5px;
     font-size: 10px;
     font-family: 'Poppins', sans-serif;
+    height: 0;
+    overflow-y: auto;
+    transition: height 0.3s ease-in-out; /* Add transition for left position change */
 }
+
+.dialog-box.active {
+    height: 310px; /* Height when active */
+}
+
+/* .dialog-box.initial-hidden {
+    display: none;
+} */
 
 .dialog-box::-webkit-scrollbar {
     width: 10px;               /* width of the entire scrollbar */
@@ -204,6 +217,8 @@ body {
     border-radius: 20px;       /* roundness of the scroll thumb */
     border: 3px solid rgba(61, 59, 59, 0.941); /* creates padding around scroll thumb */
   }
+
+  
 .dbox {
     /* top: 0px; */
     border-radius: 6px;
@@ -220,14 +235,27 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
+    border: none;
+    outline: none;
     /* font-weight: bold; */
 }
 
-.dbox:hover {
+.active, .dbox:hover {
     background-color: #bbb8ac;
     cursor: pointer;
 }
 
+  .collapsible:after {
+    content: '\002B';
+    color: rgba(61, 59, 59, 0.941);
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+  }
+  
+  .active:after {
+    content: "\2212";
+  }
 
 .editor-container {
     position: relative;

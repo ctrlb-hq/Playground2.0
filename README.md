@@ -6,6 +6,7 @@ Install dependencies for target app
 ```
 cd target_app
 npm install
+npm install @ctrlb/heimdall
 ```
 ### Install requirements
 ```
