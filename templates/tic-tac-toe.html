@@ -23,7 +23,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.css">
     <!-- Use CDN for CodeMirror JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/codemirror.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/material-darker.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/material-darker.min.css">
     <!-- Use CDN for language mode (e.g., JavaScript) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.0/mode/javascript/javascript.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplebar/5.3.0/simplebar.min.css" />
@@ -39,9 +40,11 @@
             <img src={{ url_for('static', filename='img/coding.png' ) }} alt="icon" class="img">
             <h1 class="header">CtrlB</h1>
             <div class="button-container">
-                <button id="openDialogButton" class="dbox">View Snapshot</button>
-                <div class="dialog-box" style="display: none;">
-                    <!-- <button id="closeDialogButton" class="close-dbox">Close</button> -->
+                <button id="openDialogButton" class="collapsible dbox">View Snapshot</button>
+                <div class="content">
+                    <div class="dialog-box initial-hidden">
+                        
+                    </div>
                 </div>
             </div>
         </div>
@@ -389,20 +392,10 @@
             fetchApiCode();
 
 
-
-            $(document).on("click", ".expand-button", function () {
-                var expandableContent = $(this).siblings(".expanded-content");
-                expandableContent.slideToggle();
-                if (expandableContent.is(":visible")) {
-                    $(this).text("Hide");
-                } else {
-                    $(this).text("...");
-                }
-            });
             function fetchAndDisplayTracepointEvents(port) {
                 $.ajax({
                     type: "GET",
-                    url: `{{ server_url }}:${port}/getTracepointEvents/${port}`,
+                    url: '{{ server_url }}:{{ port }}/getTracepointEvents/{{ port }}',
                     success: function (response) {
                         console.log("port is here", port, response);
                         var dialogBox = document.querySelector('.dialog-box');
@@ -439,11 +432,6 @@
                             }
                             dialogBox.innerHTML = formattedEvent;
                             dialogBox.style.display = "block";
-                            // if (!dialogBoxVisible) {
-                            //     $('.dialog-box').show();
-                            //     startInterval(); // Start the interval when opening the dialog
-                            //     dialogBoxVisible = true;
-                            // }
                         }
                     },
                     error: function (xhr, status, err) {
@@ -452,28 +440,14 @@
                 });
             }
             // Function to start the interval
-            
+
             var intervalId = null; // Declare intervalId globally
             function updateDialogBoxContent() {
-                // var dialogBox = document.querySelector('.dialog-box');
-                // var isDialogBoxVisible = dialogBox.style.display === "block";
                 if (dialogBoxVisible) {
                     fetchAndDisplayTracepointEvents(port);
-                    $('.dialog-box').show();
+                    // $('.dialog-box').show();
                 }
-                // fetchAndDisplayTracepointEvents(port);
-                // $('.dialog-box').show();
-                // startInterval();
-                // if (!isDialogBoxVisible) {
-                //     dialogBox.style.display = "block";
-                //     startInterval(); // Start the interval when opening the dialog
-                // }
-                // if (dialogBoxVisible) {
-                // fetchAndDisplayTracepointEvents(port);
-                // $('.dialog-box').show();
-                // startInterval();
-                // dialogBoxVisible = !dialogBoxVisible;
-                // }
+
             }
             function startInterval() {
                 intervalId = setInterval(updateDialogBoxContent, 1000); // 5000 milliseconds = 5 seconds
@@ -483,56 +457,115 @@
                 clearInterval(intervalId);
                 intervalId = null;
             }
-                $('#openDialogButton').on('click', function () {
-                    var dialogBox = $('.dialog-box');
-                    if (dialogBoxVisible) {
-                        dialogBox.hide();
-                        stopInterval(); // Stop the interval when closing the dialog
-                    } else {
-                        dialogBox.show();
-                        startInterval(); // Start the interval when opening the dialog
-                        fetchAndDisplayTracepointEvents(port);
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+
+            for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        var snapshotContent = content.querySelector(".dialog-box"); // Adjusted selector
+        
+        // Check if the initial-hidden class is present
+        if (snapshotContent.classList.contains("initial-hidden")) {
+            // Remove the initial-hidden class to show the dialog box
+            snapshotContent.classList.remove("initial-hidden");
+            // Continue with other functionality (fetch data, start interval, etc.)
+            content.style.maxHeight = content.scrollHeight + "px";
+            dialogBoxVisible = true;
+            fetchAndDisplayTracepointEvents();
+            startInterval();
+        } else {
+            // Toggle max height and other functionality
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                snapshotContent.style.display = "none";
+                stopInterval();
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                snapshotContent.style.display = "block";
+                dialogBoxVisible = true;
+                fetchAndDisplayTracepointEvents();
+                startInterval();
+            }
+        }
+    });
+}
+
+            var gameBoard = ['', '', '', '', '', '', '', '', ''];
+            var gameCounter = 0;
+            var gameStatus = 'In Progress'
+
+            $('.square').one('click', gameClick);
+            $('.newGame h2').on('click', newGame);
+            $('#O').one('click', playerO);
+
+            function playerTurn(count) {
+                return count % 2 === 0 ? 'X' : 'O'
+            }
+
+            function addToBoard(index) {
+                return gameBoard[index] = playerTurn(gameCounter);
+            }
+
+            function computerMove() {
+                $.ajax({
+                    type: "POST",
+                    url: '{{ server_url }}:{{ port }}/api/move',
+                    data: { board: JSON.stringify(gameBoard) },
+                    dataType: 'json',
+                    success: function (obj) {
+                        var index = obj.nextMove;
+                        addToBoard(index);
+                        $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
+                        $('#' + index.toString()).unbind('click');
+                        gameCounter++;
+                        winner();
+                    },
+                    error: function (xhr, status, err) {
+                        console.error(status, err.toString());
                     }
-                    dialogBoxVisible = !dialogBoxVisible;
                 });
+            }
 
-                var gameBoard = ['', '', '', '', '', '', '', '', ''];
-                var gameCounter = 0;
-                var gameStatus = 'In Progress'
-
-                $('.square').one('click', gameClick);
-                $('.newGame h2').on('click', newGame);
-                $('#O').one('click', playerO);
-
-                function playerTurn(count) {
-                    return count % 2 === 0 ? 'X' : 'O'
-                }
-
-                function addToBoard(index) {
-                    return gameBoard[index] = playerTurn(gameCounter);
-                }
-
-                function computerMove() {
-                    $.ajax({
-                        type: "POST",
-                        url: '{{ server_url }}:{{ port }}/api/move',
-                        data: { board: JSON.stringify(gameBoard) },
-                        dataType: 'json',
-                        success: function (obj) {
-                            var index = obj.nextMove;
-                            addToBoard(index);
-                            $('#' + index.toString()).find('h2').text(playerTurn(gameCounter));
-                            $('#' + index.toString()).unbind('click');
-                            gameCounter++;
-                            winner();
-                        },
-                        error: function (xhr, status, err) {
-                            console.error(status, err.toString());
+            function winner() {
+                $.ajax({
+                    type: "POST",
+                    url: '{{ server_url }}:{{ port }}/api/winner',
+                    data: { board: JSON.stringify(gameBoard) },
+                    dataType: 'json',
+                    success: function (obj) {
+                        gameStatus = obj.winner;
+                        if (gameStatus !== 'In Progress') {
+                            $('.outcome h2').text(gameStatus);
                         }
-                    });
-                }
+                    },
+                    error: function (xhr, status, err) {
+                        console.error(status, err.toString());
+                    }
+                });
+            }
 
-                function winner() {
+            function newGame() {
+                gameBoard = ['', '', '', '', '', '', '', '', ''];
+                gameCounter = 0;
+                gameStatus = 'In Progress';
+                $('.square').unbind('click').one('click', gameClick);
+                $('#O').unbind('click').one('click', playerO);
+                $('.square h2').empty();
+                $('.outcome h2').empty();
+                $('#X').css({ 'background-color': 'lightgreen' });
+                $('#O').css({ 'background-color': 'white' });
+                return 'new game';
+            }
+
+            function gameClick(event) {
+                var square = $(event.currentTarget);
+                var index = square.attr('id');
+                if (gameStatus === 'In Progress') {
+                    $('#' + index).find('h2').text(playerTurn(gameCounter));
+                    addToBoard(parseInt(index));
+                    gameCounter++;
                     $.ajax({
                         type: "POST",
                         url: '{{ server_url }}:{{ port }}/api/winner',
@@ -542,64 +575,27 @@
                             gameStatus = obj.winner;
                             if (gameStatus !== 'In Progress') {
                                 $('.outcome h2').text(gameStatus);
+                            } else {
+                                computerMove();
                             }
                         },
                         error: function (xhr, status, err) {
                             console.error(status, err.toString());
                         }
                     });
-                }
-
-                function newGame() {
-                    gameBoard = ['', '', '', '', '', '', '', '', ''];
-                    gameCounter = 0;
-                    gameStatus = 'In Progress';
-                    $('.square').unbind('click').one('click', gameClick);
-                    $('#O').unbind('click').one('click', playerO);
-                    $('.square h2').empty();
-                    $('.outcome h2').empty();
-                    $('#X').css({ 'background-color': 'lightgreen' });
-                    $('#O').css({ 'background-color': 'white' });
-                    return 'new game';
-                }
-
-                function gameClick(event) {
-                    var square = $(event.currentTarget);
-                    var index = square.attr('id');
-                    if (gameStatus === 'In Progress') {
-                        $('#' + index).find('h2').text(playerTurn(gameCounter));
-                        addToBoard(parseInt(index));
-                        gameCounter++;
-                        $.ajax({
-                            type: "POST",
-                            url: '{{ server_url }}:{{ port }}/api/winner',
-                            data: { board: JSON.stringify(gameBoard) },
-                            dataType: 'json',
-                            success: function (obj) {
-                                gameStatus = obj.winner;
-                                if (gameStatus !== 'In Progress') {
-                                    $('.outcome h2').text(gameStatus);
-                                } else {
-                                    computerMove();
-                                }
-                            },
-                            error: function (xhr, status, err) {
-                                console.error(status, err.toString());
-                            }
-                        });
-                        if (gameCounter > 0) {
-                            $('#O').off('click', playerO);
-                        }
+                    if (gameCounter > 0) {
+                        $('#O').off('click', playerO);
                     }
                 }
+            }
 
-                function playerO(event) {
-                    $('#X').css({ 'background-color': 'white' });
-                    $('#O').css({ 'background-color': 'lightgreen' });
-                    computerMove();
-                }
+            function playerO(event) {
+                $('#X').css({ 'background-color': 'white' });
+                $('#O').css({ 'background-color': 'lightgreen' });
+                computerMove();
+            }
 
-            });
+        });
     </script>
 </body>
 
