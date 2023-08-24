@@ -55,6 +55,11 @@
         </div>
     </div>
     <div class="right">
+        <div class="navigation-icon">
+            <a href="#" id="restartTour">
+                <img src={{ url_for('static', filename='img/info.png' ) }} alt="Navigation Icon" class="img">
+            </a>
+        </div>
         <div class="gameplay">
             <h2>Tic Tac Toss-up</h2>
             <br>
@@ -264,13 +269,52 @@
                         action() {
                             return this.next();
                         },
-                        text: 'Finish'
+                        text: 'Next'
                     }
                 ],
                 id: 'viewing-snapshot'
             });
 
+            // Step 7: Visit the page again
+            tour.addStep({
+                title: `View the instructions again? `,
+                text: 'Click on this icon to view the instructions again',
+                classes: 'last-block',
+                attachTo: {
+                    element: '.navigation-icon',
+                    on: 'left'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Back'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Finish'
+                    }
+                ],
+                id: 'instructions'
+            });
+
             tour.start();
+
+            // Function to restart the tour
+            function restartTour() {
+                tour.cancel();
+                tour.start();
+            }
+
+            // Attach click event to the navigation icon to restart the tour
+            document.getElementById("restartTour").addEventListener("click", function (event) {
+                event.preventDefault();
+                restartTour();
+            });
 
             function sendAJAXRequest(port, lineNumber) {
                 $.ajax({
@@ -395,35 +439,35 @@
                                 formattedEvent += '<span style="color: #ff7d7d;">Method Name:</span> <span style="color: #f5f3ef;">' + event[i].methodName + '</span><br>';
                                 formattedEvent += '<span style="color: #ff7d7d;">Line Number:</span> <span style="color: #f5f3ef;">' + event[i].lineNo + '</span><br>';
                                 formattedEvent += '<span style="color: #ff7d7d;">Variables:</span> </span><br>';
-                                if (event[i].variables && event[i].variables.board && event[i].variables.board['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.board && event[i].variables.board['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">board:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.board['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.req && event[i].variables.req['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.req && event[i].variables.req['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">req:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.req['@value']).substring(0, 271) + "..." + '</span><br>';
                                 }
 
-                                if (event[i].variables && event[i].variables.res && event[i].variables.res['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.res && event[i].variables.res['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">res:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.res['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.input && event[i].variables.input['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.input && event[i].variables.input['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">input:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.input['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.output && event[i].variables.output['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.output && event[i].variables.output['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">output:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.output['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.counter && event[i].variables.counter['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.counter && event[i].variables.counter['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">counter:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.counter['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.winningCombinations && event[i].variables.winningCombinations['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.winningCombinations && event[i].variables.winningCombinations['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">winningCombinations:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningCombinations['@value']).substring(0, 132) + "..." + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.winningIndex && event[i].variables.winningIndex['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.winningIndex && event[i].variables.winningIndex['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">winningIndex:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winningIndex['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.move && event[i].variables.move['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.move && event[i].variables.move['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">move:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.move['@value']) + '</span><br>';
                                 }
-                                if (event[i].variables && event[i].variables.winner && event[i].variables.winner['@type']!='undefined') {
+                                if (event[i].variables && event[i].variables.winner && event[i].variables.winner['@type'] != 'undefined') {
                                     formattedEvent += '<span style="color: #69a0f2;">winner:</span> <span style="color: #f5f3ef;">' + JSON.stringify(event[i].variables.winner['@value']) + '</span><br>';
                                 }
 
@@ -499,7 +543,7 @@
             function computerMove() {
                 $.ajax({
                     type: "POST",
-                        url: '{{ target_app_server_url }}/api/move',
+                    url: '{{ target_app_server_url }}/api/move',
                     data: { board: JSON.stringify(gameBoard) },
                     dataType: 'json',
                     success: function (obj) {
@@ -519,7 +563,7 @@
             function winner() {
                 $.ajax({
                     type: "POST",
-                        url: '{{ target_app_server_url }}/api/winner',
+                    url: '{{ target_app_server_url }}/api/winner',
                     data: { board: JSON.stringify(gameBoard) },
                     dataType: 'json',
                     success: function (obj) {
@@ -556,7 +600,7 @@
                     gameCounter++;
                     $.ajax({
                         type: "POST",
-                            url: '{{ target_app_server_url }}/api/winner',
+                        url: '{{ target_app_server_url }}/api/winner',
                         data: { board: JSON.stringify(gameBoard) },
                         dataType: 'json',
                         success: function (obj) {
