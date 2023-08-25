@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>CtrlB's Playground</title>
     <style>
@@ -9,60 +10,160 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #000000;
+            background-color: #ffffff;
             font-family: 'ADLaM Display', cursive;
             /* font-family: Arial, sans-serif; */
-            background-image: url('../static/img/MicrosoftTeams-image.png');
-            /* Replace 'path/to/your/image.jpg' with the actual path to your image */
+            /* background-image: url('../static/img/bg3.jpg'); */
             background-size: cover;
+        }
+
+        .icon-on-left {
+            /* Your existing styles */
+            /* ... */
+
+            /* Add styles to limit the size of the container */
+            /* max-width: 200px; */
+            /* max-height: 300px; */
+            overflow: hidden;
+            margin: auto;
+            /* width: 500px;
+            height: 500px; */
+            /* Adjust height as needed */
+            /* position: absolute; */
+            /* left: 0; */
+            /* top: 50%; */
+            /* transform: translateY(-50%);*/
+        }
+
+        .icon-on-left img {
+            /* Ensure images inside the container have consistent dimensions */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Maintain aspect ratio while covering the container */
+        }
+
+        .carousel-container {
+            /* position: relative; */
+            overflow: hidden;
+            /* max-width: 200px;
+            max-height: 300px; */
+            border-radius: 10px;
+        }
+
+        .carousel-images {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* position: absolute; */
+    opacity: 1;
+    transition: opacity 1s ease-in-out; /* Adjust the transition timing as needed */
+}
+
+.carousel-image.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        .carousel-dot.active {
+            background-color: rgba(0, 0, 0, 0.8);
         }
 
         .dialog {
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 500px;
             padding: 20px;
-            background-color: #e4e2e2eb;
-            /* Updated with RGBA for transparency */
+            position: relative;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-right: 200px;
-            margin-top: 20px;
+            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.78);
+            margin-right: 130px;
+            /* Adjust as needed */
+            /* margin-left: 30px; */
+            /* Automatically fill the remaining space */
             width: 500px;
-            height: 330px;
+            height: 450px;
         }
 
-        .dialog>img{
+
+        .dialog::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background-image: url('../static/img/bg10.png');
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .dialog::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background-color: black;
+            /* Adjust the color as needed */
+
+            z-index: -1;
+        }
+
+        .dialog>img {
             margin-top: 0;
-            margin-bottom: 5px;
+            margin-bottom: 0px;
             padding: 0;
-            height: 45px;
+            height: 40px;
             border-radius: 50%;
         }
 
-        .dialog>h3{
-            font-family: 'ADLaM Display', cursive;
-            /* font-family: 'Dai Banna SIL', serif; */
-            font-size: 20px;
-            margin: 5px;
+        .dialog>h3 {
+            /* font-family: 'ADLaM Display', cursive;  */
+            font-family: 'Dai Banna SIL', serif;
+            font-size: 18px;
+            margin: 4px;
             padding: 0;
         }
-        .dialog>h2{
-            font-size: 35px;
-            font-family: 'ADLaM Display', cursive;
-            /* font-family: "Audiowide", sans-serif; */
+
+        .dialog>h2 {
+            font-size: 33px;
+            /* font-family: 'ADLaM Display', cursive; */
+            font-family: "Audiowide", sans-serif;
             margin: 0px;
             padding: 0;
         }
-        .dialog>h5{
-            /* font-family: 'Dai Banna SIL', serif; */
-            font-family: 'ADLaM Display', cursive;
+
+        .dialog>h5 {
+            font-family: 'Dai Banna SIL', serif;
+            /* font-family: 'ADLaM Display', cursive; */
             font-size: 15px;
-            margin: 15px;
+            margin: 12px;
             padding: 0;
         }
-        .dialog>h6{
+
+        .dialog>h6 {
             font-size: 15px;
             /* font-family: 'Edu SA Beginner', cursive; */
             font-family: 'ADLaM Display', cursive;
@@ -126,31 +227,138 @@
         .form-group input[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        .ctrlbimg {
+            display: flex;
+            margin: auto;
+        }
+
+        .ctrlbimg>img {
+            width: 166px;
+            /* top: 4px; */
+            position: relative;
+            left: 12px;
+        }
+
+        .para {
+
+            font-size: 12px;
+            position: relative;
+            right: 12px;
+            color: floralwhite;
+        }
+
+        .para>p {
+            font-weight: bolder;
+            margin: 11px 2px;
+            font-family: 'Dai Banna SIL', serif;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dai+Banna+SIL:ital,wght@1,600&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ url_for('static', filename='../static/img/ctrlbnew.png') }}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Dai+Banna+SIL:wght@300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
 </head>
+
 <body>
+    <div class="icon-on-left">
+        <div class="carousel-container">
+            <div id="gif-carousel" class="carousel-images">
+                <!-- GIF images will be added here dynamically -->
+                <img src="" alt="GIF" class="carousel-image" id="gif-container">
+            </div>
+            <div class="carousel-dots" id="carousel-dots"></div>
+        </div>
+    </div>
     <div class="dialog">
         <img src="../static/img/logo.png" alt="">
         <h3>Welcome to</h3>
-        <h2>CtrlB's Playground</h2>
-        <h5>Play around with our super debugger in a live app.</h5> 
+        <h2>CtrlB Playground</h2>
+        <h5>Play around with our super debugger in a live app.</h5>
         <h5 style="margin-top:0px">No configuration needed.</h5>
         <!-- <div class="dialog-heading">Enter Your Email</div> -->
         <form method="post">
             <div class="form-group">
                 <!-- <div class="input-wrap"> -->
-                    <!-- <label for="email">Email:</label> -->
-                    <input type="email" id="email" name="email" placeholder="Enter your Email" required>
+                <!-- <label for="email">Email:</label> -->
+                <input type="email" id="email" name="email" placeholder="Enter your Email" required>
                 <!-- </div> -->
             </div>
             <div class="form-group">
                 <input type="submit" value="Let's get started">
             </div>
         </form>
+        <div class="ctrlbimg">
+            <div class="para">
+                <p>
+
+                    ✅ Add logs, metrics, & traces in real-time & on demand
+                </p>
+                <p>
+
+                    ✅ No need for hotfixes, restarts, or redeployment
+                </p>
+                <p>
+
+                    ✅ Live debugger with Serverless & Feature Flag debugging
+                </p>
+                <p>
+
+                    ✅ Works into your IDE and supports Node.js & Python
+                </p>
+            </div>
+            <img src="../static/img/ctrlbnew.png" alt="">
+        </div>
     </div>
 </body>
+<script>
+    const gifImages = [
+        // <img src="../static/img/debugger.png" alt="">
+        '../static/img/debugger7.png',
+        '../static/img/debugger4.png',
+        '../static/img/debugger5.png',
+        '../static/img/debugger3.png'
+        // '../static/img/debugger2.png',
+        // Add more GIF image paths here
+    ];
+
+    const gifContainer = document.getElementById('gif-container');
+    const dotContainer = document.getElementById('carousel-dots');
+    let currentIndex = 0;
+
+    function changeGif() {
+        currentIndex = (currentIndex + 1) % gifImages.length;
+        gifContainer.src = gifImages[currentIndex];
+    updateActiveDot();
+    }
+
+    function updateActiveDot() {
+        const dots = dotContainer.getElementsByClassName('carousel-dot');
+        for (let i = 0; i < dots.length; i++) {
+            dots[i].classList.toggle('active', i === currentIndex);
+        }
+    }
+
+    // Create navigation dots
+    for (let i = 0; i < gifImages.length; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('carousel-dot');
+        dot.addEventListener('click', () => {
+            currentIndex = i;
+            gifContainer.src = gifImages[currentIndex];
+            // gifContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+            updateActiveDot();
+        });
+        dotContainer.appendChild(dot);
+    }
+
+    // Initialize active dot
+    updateActiveDot();
+    gifContainer.src = gifImages[currentIndex];
+
+    // Change GIF every 3 seconds (adjust the interval as needed)
+    setInterval(changeGif, 3000);
+</script>
+
 </html>
