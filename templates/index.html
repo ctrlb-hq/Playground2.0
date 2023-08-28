@@ -13,81 +13,14 @@
             background-color: #ffffff;
             font-family: 'ADLaM Display', cursive;
             /* font-family: Arial, sans-serif; */
-            /* background-image: url('../static/img/bg3.jpg'); */
+            /* background-color: rgba(0, 0, 0, 0.6); */
+            /* background-image: url('../static/img/bgdebug.png'); */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.722), rgba(0, 0, 0, 0.711)), url('../static/img/bgdebug.png');
+            /* backdrop-filter: blur(1px); */
             background-size: cover;
         }
 
-        .icon-on-left {
-            /* Your existing styles */
-            /* ... */
-
-            /* Add styles to limit the size of the container */
-            /* max-width: 200px; */
-            /* max-height: 300px; */
-            overflow: hidden;
-            margin: auto;
-            /* width: 500px;
-            height: 500px; */
-            /* Adjust height as needed */
-            /* position: absolute; */
-            /* left: 0; */
-            /* top: 50%; */
-            /* transform: translateY(-50%);*/
-        }
-
-        .icon-on-left img {
-            /* Ensure images inside the container have consistent dimensions */
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Maintain aspect ratio while covering the container */
-        }
-
-        .carousel-container {
-            /* position: relative; */
-            overflow: hidden;
-            /* max-width: 200px;
-            max-height: 300px; */
-            border-radius: 10px;
-        }
-
-        .carousel-images {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-        }
-
-        .carousel-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* position: absolute; */
-    opacity: 1;
-    transition: opacity 1s ease-in-out; /* Adjust the transition timing as needed */
-}
-
-.carousel-image.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .carousel-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.3);
-            margin: 0 5px;
-            cursor: pointer;
-        }
-
-        .carousel-dot.active {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
+    
 
         .dialog {
             display: flex;
@@ -96,7 +29,7 @@
             padding: 20px;
             position: relative;
             border-radius: 10px;
-            box-shadow: 0 15px 20px rgba(0, 0, 0, 0.78);
+            box-shadow: 0 5px 7px rgb(104 104 104 / 22%);
             margin-right: 130px;
             /* Adjust as needed */
             /* margin-left: 30px; */
@@ -125,7 +58,7 @@
             left: 0;
             width: 100%;
             height: 30%;
-            background-color: black;
+            background: linear-gradient(#1e1919,#333333,#4b4b4b);
             /* Adjust the color as needed */
 
             z-index: -1;
@@ -172,12 +105,7 @@
             padding: 0;
         }
 
-        /* .dialog-heading {
-            font-size: 24px;
-            color: #131415;
-            margin-bottom: 30px;
-            text-align: center;
-        } */
+    
 
         form {
             display: flex;
@@ -262,15 +190,7 @@
 </head>
 
 <body>
-    <div class="icon-on-left">
-        <div class="carousel-container">
-            <div id="gif-carousel" class="carousel-images">
-                <!-- GIF images will be added here dynamically -->
-                <img src="" alt="GIF" class="carousel-image" id="gif-container">
-            </div>
-            <div class="carousel-dots" id="carousel-dots"></div>
-        </div>
-    </div>
+    
     <div class="dialog">
         <img src="../static/img/logo.png" alt="">
         <h3>Welcome to</h3>
@@ -285,7 +205,7 @@
                 <input type="email" id="email" name="email" placeholder="Enter your Email" required>
                 <!-- </div> -->
             </div>
-            <div class="form-group">
+            <div class="form-group" >
                 <input type="submit" value="Let's get started">
             </div>
         </form>
@@ -313,52 +233,7 @@
     </div>
 </body>
 <script>
-    const gifImages = [
-        // <img src="../static/img/debugger.png" alt="">
-        '../static/img/debugger7.png',
-        '../static/img/debugger4.png',
-        '../static/img/debugger5.png',
-        '../static/img/debugger3.png'
-        // '../static/img/debugger2.png',
-        // Add more GIF image paths here
-    ];
-
-    const gifContainer = document.getElementById('gif-container');
-    const dotContainer = document.getElementById('carousel-dots');
-    let currentIndex = 0;
-
-    function changeGif() {
-        currentIndex = (currentIndex + 1) % gifImages.length;
-        gifContainer.src = gifImages[currentIndex];
-    updateActiveDot();
-    }
-
-    function updateActiveDot() {
-        const dots = dotContainer.getElementsByClassName('carousel-dot');
-        for (let i = 0; i < dots.length; i++) {
-            dots[i].classList.toggle('active', i === currentIndex);
-        }
-    }
-
-    // Create navigation dots
-    for (let i = 0; i < gifImages.length; i++) {
-        const dot = document.createElement('div');
-        dot.classList.add('carousel-dot');
-        dot.addEventListener('click', () => {
-            currentIndex = i;
-            gifContainer.src = gifImages[currentIndex];
-            // gifContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
-            updateActiveDot();
-        });
-        dotContainer.appendChild(dot);
-    }
-
-    // Initialize active dot
-    updateActiveDot();
-    gifContainer.src = gifImages[currentIndex];
-
-    // Change GIF every 3 seconds (adjust the interval as needed)
-    setInterval(changeGif, 3000);
+    
 </script>
 
 </html>

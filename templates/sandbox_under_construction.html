@@ -4,23 +4,93 @@
   <title>Tic-Tac-Tossup</title>
   <style>
     body {
-      font-family: 'ADLaM Display', cursive;
-      font-size: 25px;
-      background-color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-    }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+            font-family: 'ADLaM Display', cursive;
+            /* font-family: Arial, sans-serif; */
+            /* background-color: rgba(0, 0, 0, 0.6); */
+            /* background-image: url('../static/img/bgdebug.png'); */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.722), rgba(0, 0, 0, 0.711)), url('../static/img/bgdebug.png');
+            /* backdrop-filter: blur(1px); */
+            background-size: cover;
+        }
+        .dialog {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 5px 7px rgb(104 104 104 / 22%);
+            margin-right: 130px;
+            /* Adjust as needed */
+            /* margin-left: 30px; */
+            /* Automatically fill the remaining space */
+            width: 500px;
+            height: 450px;
+        }
+
+
+        .dialog::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background-image: url('../static/img/bg10.png');
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .dialog::after {
+          /* padding: 30px; */
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(#1e1919,#333333,#4b4b4b);
+            /* Adjust the color as needed */
+
+            z-index: -1;
+        }
+        .ctrlbimg {
+            display: flex;
+            margin: auto;
+        }
+
+        .ctrlbimg>img {
+            width: 166px;
+            /* top: 4px; */
+            position: relative;
+            left: 5px;
+        }
+
+        .para {
+
+            font-size: 11px;
+            position: relative;
+            right: 5px;
+            color: floralwhite;
+        }
+
+        .para>p {
+            font-weight: bolder;
+            margin: 11px 2px;
+            font-family: 'Dai Banna SIL', serif;
+        }
 
     #loading-message {
       font-family: 'ADLaM Display', cursive;
-      font-size: 25px;
+      font-size: 20px;
       text-align: center;
-      margin-bottom: 20px;
+      margin: 35px 0px ;
     }
 
     .loading-container {
@@ -37,7 +107,7 @@
       border-top: 9px solid #2079b4;
       border-radius: 50%;
       animation: spin 2s linear infinite;
-      margin-bottom: 10px;
+      margin-bottom: 85px;
     }
 
     .inner-image {
@@ -65,14 +135,6 @@
       }
     }
 
-    /* @keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.2);
-  }
-} */
   </style>
   <link rel="icon" href="{{ url_for('static', filename='../static/img/ctrlbnew.png') }}" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=ADLaM+Display&display=swap" rel="stylesheet">
@@ -101,15 +163,39 @@
 </head>
 
 <body>
-  <div id="loading-message">
-    Our Agents are preparing a playground for you, stay back ! 🛠️
-  </div>
-
-  <div class="loading-container">
-    <div class="loading-circle">
-      <div class="inner-image"></div>
+  <div class="dialog">
+    <div id="loading-message">
+      Our Agents are preparing a playground for you, stay back ! 🛠️
     </div>
-  </div>
+  
+    <div class="loading-container">
+      <div class="loading-circle">
+        <div class="inner-image"></div>
+      </div>
+    </div>
+    <div class="ctrlbimg">
+        <div class="para">
+            <p>
+
+                ✅ Add logs, metrics, & traces in real-time & on demand
+            </p>
+            <p>
+
+                ✅ No need for hotfixes, restarts, or redeployment
+            </p>
+            <p>
+
+                ✅ Live debugger with Serverless & Feature Flag debugging
+            </p>
+            <p>
+
+                ✅ Works into your IDE and supports Node.js & Python
+            </p>
+        </div>
+        <img src="../static/img/ctrlbnew.png" alt="">
+    </div>
+</div>
+  
 
   <script>
     // Function to redirect the user to a new URL after a specified delay
